@@ -1,0 +1,75 @@
+/* change font and box shadow, border radius, width */
+.mapboxgl-ctrl-geocoder {
+  font-family: "Lato";
+  box-shadow: none;
+  border-radius: 0;
+  width: 260px;
+}
+
+/* adjust padding now that search icon is on the right */
+.mapboxgl-ctrl-geocoder--input {
+  padding-left: var(--spacing-7);
+  padding-right: var(--spacing-3);
+  color: var(--color-gray-shade-darker) !important;
+}
+
+.mapboxgl-ctrl-geocoder--input::placeholder {
+  color: var(--color-gray-shade-darker);
+}
+
+/* unset focus outline */
+.mapboxgl-ctrl-geocoder--input:focus {
+  outline: unset;
+}
+
+/* remove border radius from suggestions div */
+.mapboxgl-ctrl-geocoder .suggestions {
+  border-radius: 0;
+}
+
+/* add "disabled" cursor */
+.mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--input[disabled] {
+  cursor: not-allowed;
+}
+
+/* make second line font weight normal */
+.mapboxgl-ctrl-geocoder--suggestion-address {
+  font-weight: normal;
+}
+
+/* remove "powered by mapbox" in autocomplete */
+.mapboxgl-ctrl-geocoder--powered-by {
+  display: none !important;
+}
+
+/* move search icon */
+.mapboxgl-ctrl-geocoder--icon-search {
+  /* display: none; */
+  /* left: unset; */
+  left: var(--spacing-1);
+}
+
+/* move close icon */
+.mapboxgl-ctrl-geocoder--icon-close {
+  display: none;
+  /* left: unset;
+  right: var(--spacing-3); */
+}
+
+.mapboxgl-ctrl-geocoder--icon-loading {
+  display: none !important;
+}
+
+/* change icon color */
+.mapboxgl-ctrl-geocoder--icon {
+  fill: var(--color-black);
+}
+
+/* adjust "pinned" icon position to be underneath search icon */
+.mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--pin-right > * {
+  right: 13.5px;
+}
+
+.mapboxgl-ctrl-geocoder {
+  border: 1px solid var(--color-gray);
+}

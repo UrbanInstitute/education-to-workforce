@@ -1,0 +1,9 @@
+/* Import Lato font from Google fonts */
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap");
+/* Import Futura PT font from typekit */
+@import url("//use.typekit.net/mai6yqm.css");
+
+
+:root {
+  --font-weight-semibold: 600;
+}

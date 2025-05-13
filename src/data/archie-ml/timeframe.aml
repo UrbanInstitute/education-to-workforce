@@ -1,0 +1,8 @@
+#### TIMEFRAME METADATA ####
+[dropdown]
+value: recent
+label: Most recent year only
+
+value: all
+label: All available years
+[]

@@ -1,0 +1,24 @@
+{.barchart}
+
+state: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{national_value}} nationally.
+
+state_compare: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{comparison_value}} in {{comparison_location}} and {{national_value}} nationally.
+
+county_tract: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{state_value}} in {{state}} and {{national_value}} nationally.
+
+county_tract_compare: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{comparison_value}} in {{comparison_location}}, {{state_value}} in {{state}}, and {{national_value}} nationally
+
+{}
+
+{.linechart}
+
+state: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}} and {{national_value_last}} nationally.
+
+state_compare: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} compared with {{comparison_value_first}} in {{comparison_location}} and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}}, {{comparison_value_last}} in {{comparison_location}}, and {{national_value_last}} nationally.
+
+county_tract: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} compared with {{state_value_first}} in {{state}} and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}}, {{state_value_last}} in {{state}}, and {{national_value_last}} nationally.
+
+county_tract_compare: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} compared with {{comparison_value_first}} in {{comparison_location}}, {{state_value_first}} in {{state}}, and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}}, {{comparison_value_last}} in {{comparison_location}}, {{state_value_last}} in {{state}}, and {{national_value_last}} nationally.
+
+{}
+

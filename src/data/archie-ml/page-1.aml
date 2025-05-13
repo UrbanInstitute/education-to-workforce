@@ -1,0 +1,46 @@
+#### TITLE ####
+title: The Education-to-Workforce Framework Data Tool
+
+description: Explore data on education and workforce outcomes, and compare data by geography, income, race, ethnicity, and more.
+
+data_download_link: https://datacatalog.urban.org/dataset/education-workforce-framework-tool-data
+
+data_download_text: Download Data
+
+#### LEFT-PANE COPY ####
+[copy]
+* The pathway through school and into the workforce requires people to navigate a complex network of opportunities and environments. Students moving through this process need to hit key milestones and have access to resources and experiences that enable them to be successful.
+* The <a href="https://educationtoworkforce.org/" target="_blank">Education-to-Workforce Indicator Framework</a> makes it easy to track the outcomes and conditions most critical to students’ success. Through its 99 indicators, the framework empowers policymakers, administrators, educators, community organizations, researchers, parents, and students to work together <a href="https://thetraininghub.strivetogether.org/learn/courses/541/introduction-to-the-e-w-framework-self-paced" target="_blank">to measure achievement and take action in their community</a>.
+* Here, we have collected all available national data, allowing you to compare indicators of success across geographies, over time, and much more to help answer essential questions about student achievement. To start, select a community on the right or use the button above to download all the data.
+[]
+
+#### RIGHT-PANE COPY ####
+[directions]
+* Select a community
+* Select a topic to explore available data
+[]
+
+[section_a_labels]
+* Choose data level
+* Search
+[]
+
+
+#### DROPDOWN OPTIONS ####
+[geoLevelDropdownData]
+value: states
+label: State
+
+value: counties
+label: County
+
+value: tracts
+label: Neighborhood (census tract)
+[]
+
+#### "SEE MORE" COPY ####
+seeMoreCopy: <a href="https://educationtoworkforce.org/essential-questions" target="_blank">Read more about these topics areas</a>
+
+#### Nav buttons ####
+
+submit_button: See charts

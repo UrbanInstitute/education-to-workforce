@@ -1,0 +1,103 @@
+[data]
+
+id: 1
+shorthand: Neighborhood conditions
+full_question: Do students and families have access to adequate public supports and neighborhood conditions to enable them to succeed academically and in the workforce?
+question_template: Do students and families {{location}} have access to adequate public supports and neighborhood conditions to enable them to succeed academically and in the workforce?
+
+id: 2
+shorthand: Full-day prekindergarten
+full_question: Are eligible children enrolled in quality, full-day pre-K programs?
+question_template: Are eligible children {{location}} enrolled in quality, full-day pre-K programs?
+
+id: 3
+shorthand: Readiness for early grades
+full_question: Are children demonstrating developmental progress across the five learning domains?
+question_template: Are children {{location}} demonstrating developmental progress across the five learning domains?
+
+id: 4
+shorthand: Full-day kindergarten
+full_question: Do students have access to quality, full-day kindergarten?
+question_template: Do students {{location}} have access to quality, full-day kindergarten?
+
+id: 5
+shorthand: Early grade on track
+full_question: Are students demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track in the early grades?
+question_template: Are students {{location}} demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track in the early grades?
+
+id: 6
+shorthand: High-quality school environment
+full_question: Do students have access to quality school environments, including quality curricula and instruction, experienced teachers, effective leaders, and adequate funding?
+question_template: Do students {{location}} have access to quality school environments, including quality curricula and instruction, experienced teachers, effective leaders, and adequate funding?
+
+id: 7
+shorthand: Exclusionary discipline
+full_question: Are there populations of students that disproportionately experience exclusionary discipline practices that disrupt their educational experience?
+question_template: Are there populations of students {{location}} that disproportionately experience exclusionary discipline practices that disrupt their educational experience?
+
+id: 8
+shorthand: Early-grade reading and math
+full_question: Are students meeting reading and math benchmarks in grades 3 and 8?
+question_template: Are students {{location}} meeting reading and math benchmarks in grades 3 and 8?
+
+id: 9
+shorthand: Teacher and school contributions
+full_question: Are teachers and schools making sufficient contributions to academic growth for students?
+question_template: Are teachers and schools {{location}} making sufficient contributions to academic growth for students?
+
+id: 10
+shorthand: Supportive school environments
+full_question: Do students attend schools with safe, inclusive, and supportive environments that support their social, emotional, mental, and physical development and well-being?
+question_template: Do students {{location}} attend schools with safe, inclusive, and supportive environments that support their social, emotional, mental, and physical development and well-being?
+
+id: 11
+shorthand: High school on track
+full_question: Are students demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track for high school graduation?
+question_template: Are students {{location}} demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track for high school graduation?
+
+id: 12
+shorthand: College preparation
+full_question: Do students have access to and complete rigorous and accelerated college preparatory coursework?
+question_template: Do students {{location}} have access to and complete rigorous and accelerated college preparatory coursework?
+
+id: 13
+shorthand: Applying to college
+full_question: Are students taking the necessary steps to apply to college after high school with sufficient counseling support?
+question_template: Are students {{location}} taking the necessary steps to apply to college after high school with sufficient counseling support?
+
+id: 14
+shorthand: High school graduation
+full_question: Are students graduating from high school on time and successfully transitioning into further education, training, or employment?
+question_template: Are students {{location}} graduating from high school on time and successfully transitioning into further education, training, or employment?
+
+id: 15
+shorthand: Career pathways
+full_question: Are there quality pathways for students who pursue career training that lead to employment in quality jobs?
+question_template: Are there quality pathways for students who pursue career training {{location}} that lead to employment in quality jobs?
+
+id: 16
+shorthand: College enrollment
+full_question: Are students matriculating to well-matched postsecondary institutions that successfully graduate their students with credentials of value?
+question_template: Are students {{location}} matriculating to well-matched postsecondary institutions that successfully graduate their students with credentials of value?
+
+id: 17
+shorthand: Financial aid
+full_question: Do students attend postsecondary institutions that provide adequate financial aid and are adequately funded to offer a quality educational experience?
+question_template: Do students {{location}} attend postsecondary institutions that provide adequate financial aid and are adequately funded to offer a quality educational experience?
+
+id: 18
+shorthand: College on track
+full_question: Are students experiencing sufficient early momentum in postsecondary education to be on track for on-time completion?
+question_template: Are students {{location}} experiencing sufficient early momentum in postsecondary education to be on track for on-time completion?
+
+id: 19
+shorthand: Postsecondary skills and outcomes
+full_question: Are students completing credentials of value after high school that set them up for success in the workforce?
+question_template: Are students {{location}} completing credentials of value after high school that set them up for success in the workforce?
+
+id: 20
+shorthand: Economic mobility and security
+full_question: Are students gaining access to quality jobs that offer economic mobility and security after high school or postsecondary training and education?
+question_template: Are students {{location}} gaining access to quality jobs that offer economic mobility and security after high school or postsecondary training and education?
+
+[]

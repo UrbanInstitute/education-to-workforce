@@ -1,0 +1,70 @@
+{meta}
+title: Indicators of Success, by {{geo}}
+description: Explore {{geo}} data on education and workforce outcomes.
+{}
+#### CONTROLS COPY ####
+title: Explore All Education-to-Workforce Indicators
+subtitle: {{x}} metrics of success have available data
+subtitleSingular: {{x}} metric of success has available data
+return: Return to previous selections
+noIndicators: No metrics meet these criteria. Please adjust your selections.
+
+{controls}
+show: Show controls
+hide: Hide controls
+{}
+
+
+#### FILTER METADATA ####
+[filters]
+
+# SECTOR #
+# can be found in the schema excel doc in the fields in the "meta_indicators" tab #
+value: sector
+label: Sector
+[.selections]
+# ----- #
+value: prek
+label: Pre-K
+# ----- #
+value: k12
+label: K-12
+# ----- #
+value: postsec
+label: Postsecondary
+# ----- #
+value: work
+label: Workforce
+[]
+
+# DOMAIN #
+# can be found in the schema excel doc in the "domains" tab #
+value: domain
+label: Domain
+[.selections]
+# ----- #
+value: 1
+label: Academic Progress and Completion
+# ----- #
+value: 2
+label: Career Readiness and Economic Success
+# ----- #
+value: 3
+label: Social, Emotional, and Physical Well-being
+[]
+
+# TYPE #
+# can be found in the schema excel doc in the "types" tab #
+value: type
+label: Type
+[.selections]
+# ----- #
+value: 3
+label: Adjacent System Conditions
+# ----- #
+value: 2
+label: Education-to-Workforce System Conditions
+# ----- #
+value: 1
+label: Outcomes and Milestones
+[]

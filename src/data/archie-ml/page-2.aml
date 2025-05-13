@@ -1,0 +1,27 @@
+title: Indicators of Success for the Education-to-Workforce Pipeline
+description: Curated data for stakeholders to assess the effectiveness of education and workforce training opportunities in their communities.
+
+#### Control labels ####
+
+{controls}
+location: Geography
+question: Essential question
+time: Time frame
+{}
+#### UN/AVAILABLE DATA COPY ####
+{availableData}
+label: {{metricCount}} metrics across {{indicatorCount}} indicators of success have available data
+labelSingular: {{metricCount}} metric accross {{indicatorCount}} indicator of success has available data
+labelNoData: No metrics have available data
+{}
+
+{unavailableData}
+label: {{metricCount}} metrics across {{indicatorCount}} indicators of success do not have available data
+labelSingular: {{metricCount}} metric across {{indicatorCount}} indicator of success does not have available data
+labelNoData: No metrics have available data
+copy: Some indicators of success named in the framework do not have available data because data are not collected at all, are not collected widely, or are not publicly available. In some cases, data may not be available at the federal level but are available through state data systems. To fill these gaps, the <a href="https://studentupwardmobility.urban.org/" target="_blank">Student Upward Mobility Initiative</a> is developing new measures and data, and we invite schools, institutions, and community-based organizations to work with research teams like ours. Email us at <a href="mailto:SUMI@urban.org">SUMI@urban.org</a>.
+{}
+
+#### FOOTER COPY ####
+footer: Explore all available data for {{location}} using our interactive map
+button_text: See all data
