@@ -7,7 +7,7 @@ import states from "$data/metrics/states.json";
 import page from "$archie/page-3.aml";
 // @ts-ignore
 import timeframeData from "$archie/timeframe.aml";
-import { SLUG_ENTRIES } from "$utils/consts";
+import { SLUG_ENTRIES, slugToInternal } from "$utils/consts";
 
 import indicators from "$data/metadata/indicators.json";
 import metrics from "$data/metadata/metrics.json";
@@ -15,14 +15,15 @@ import GeoNames from "$utils/geoNames";
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params }) {
-  const geoNames = new GeoNames(params.slug);
+  const internalSlug = slugToInternal(params.slug);
+  const geoNames = new GeoNames(internalSlug);
   // make sure geoNames fetches necessary metadata
   await geoNames.fetchData();
   return {
     national: national["00"],
     states,
     archie: { page, timeframeData },
-    slug: params.slug,
+    slug: internalSlug,
     metadata: { indicators, metrics },
     geoNames
   };

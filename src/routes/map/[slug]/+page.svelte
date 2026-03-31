@@ -13,7 +13,7 @@
   import cacheMap from "$utils/cacheMap";
   import ClearSelection from "$components/Geocoder/ClearSelection.svelte";
   import { getMetricCardData } from "$utils/getMetricCardData";
-  import { DROPDOWN_WIDTH } from "$utils/consts";
+  import { DROPDOWN_WIDTH, COLOR_RANGE, internalToSlug } from "$utils/consts";
   import Mapbox from "$components/Page3/Mapbox.svelte";
   import MapInfo from "$components/Page3/MapInfo.svelte";
   import getSelectedIndicators from "$utils/getSelectedIndicators";
@@ -22,7 +22,6 @@
   import { tick } from "svelte";
   import MetricCardNoData from "$components/MetricCard/MetricCardNoData.svelte";
   import { scaleThreshold } from "d3-scale";
-  import { COLOR_RANGE } from "$utils/consts";
   import { prefersReducedMotion } from "svelte/motion";
   import { bboxPolygon } from "@turf/bbox-polygon";
   import { featureCollection } from "@turf/helpers";
@@ -294,10 +293,10 @@
   // page meta
 
   let pageTitleGeo = $derived(
-    pageSlug === "states" ? "State" : pageSlug === "counties" ? "County" : "Neighborhood"
+    pageSlug === "states" ? "State" : pageSlug === "counties" ? "County" : pageSlug == "school_districts" ? "School district" : "Neighborhood"
   );
   let pageDescriptionGeo = $derived(
-    pageSlug === "states" ? "state" : pageSlug === "counties" ? "county" : "neighborhood"
+    pageSlug === "states" ? "state" : pageSlug === "counties" ? "county" : pageSlug === "school_districts" ? "school district" : "neighborhood"
   );
 </script>
 
@@ -482,7 +481,7 @@
     <div class="non-card-container">
       <a
         class="return"
-        href={getAbsoluteUrl(`indicators/${pageSlug}?${buildQueryString($params)}`)}
+        href={getAbsoluteUrl(`indicators/${internalToSlug(pageSlug)}?${buildQueryString($params)}`)}
       >
         <IconArrowLeft fill={urbanColors.gray_shade_darkest} />
         <span>{data.archie.page.return}</span>

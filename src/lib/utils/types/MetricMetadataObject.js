@@ -5,6 +5,7 @@
  * @property {boolean} [geo_counties] - Whether the metric is available for counties
  * @property {boolean} [geo_states] - Whether the metric is available for states
  * @property {boolean} [geo_tracts] - Whether the metric is available for tracts
+ * @property {boolean} [geo_school_districts] - Whether the metric is available for school districts
  * @property {boolean} [geo_usa] - Whether the metric is available for the national level
  * @property {boolean} in_tool - Whether the metric should be represented in the tool
  * @property {number} indicator_number - The indicator number (ID) the metric is associated with

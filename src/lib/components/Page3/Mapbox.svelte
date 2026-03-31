@@ -2,7 +2,7 @@
   import mapboxgl from "mapbox-gl";
   import "mapbox-gl/dist/mapbox-gl.css";
   import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
-  import { MAPBOX_BASEMAP, MAPBOX_TILESETS } from "$utils/consts";
+  import { MAPBOX_BASEMAP, MAPBOX_TILESETS, MAPBOX_SOURCE_LAYERS } from "$utils/consts";
   import { formatFun } from "$utils/formatFun";
   import { urbanColors } from "@urbaninstitute/dataviz-components/utils";
   import { untrack } from "svelte";
@@ -47,9 +47,13 @@
   let currentGeoid1 = $derived(+geoid1);
   let currentGeoid2 = $derived(geoid2 ? +geoid2 : undefined);
 
+  // internal geo level
+  let internalGeoLevel = $derived(geoLevel);
   // map source layer name
   let sourceLayer = $derived(
-    geoLevel === "tracts" && mobileMediaQuery.current ? "tracts_simplified" : geoLevel
+    internalGeoLevel === "tracts" && mobileMediaQuery.current
+      ? "tracts_simplified"
+      : MAPBOX_SOURCE_LAYERS[internalGeoLevel]
   );
 
   // has the map set the initial bbox yet?

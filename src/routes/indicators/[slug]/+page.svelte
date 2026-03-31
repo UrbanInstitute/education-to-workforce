@@ -14,7 +14,7 @@
   import { constructQueryParams, buildQueryString } from "$utils/queryParameters";
   import ClearSelection from "$components/Geocoder/ClearSelection.svelte";
   import { getMetricCardData } from "$utils/getMetricCardData";
-  import { DROPDOWN_WIDTH } from "$utils/consts";
+  import { DROPDOWN_WIDTH, internalToSlug } from "$utils/consts";
   import MetricCardNoData from "$components/MetricCard/MetricCardNoData.svelte";
   import getSelectedIndicators from "$utils/getSelectedIndicators";
   import { intermediateMobileMediaQuery, mobileMediaQuery } from "$utils/mediaQuery.svelte";
@@ -240,6 +240,7 @@
           contextData={geoid1ContextData}
           name={geoid1Data.name}
           contextVars={data.metadata.context}
+          geoLevel={pageSlug}
         />
       {/if}
       {#if geoid2ContextData && geoid2Data}
@@ -247,6 +248,7 @@
           contextData={geoid2ContextData}
           name={geoid2Data.name}
           contextVars={data.metadata.context}
+          geoLevel={pageSlug}
         />
       {/if}
       <div class="card-grid-title-container">
@@ -353,7 +355,7 @@
 </div>
 <!-- remove eqid from query string -->
 <StickyFooter
-  href={getAbsoluteUrl(`map/${pageSlug}?${buildQueryString($params)}`)}
+  href={getAbsoluteUrl(`map/${internalToSlug(pageSlug)}?${buildQueryString($params)}`)}
   buttonText={data.archie.page.button_text}
   copy={geoid1Data
     ? formatDynamicText(data.archie.page.footer, { location: geoid1Data.name })

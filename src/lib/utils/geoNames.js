@@ -4,7 +4,7 @@ export default class GeoNames {
   geoLookup = new Map();
 
   /**
-   * @param {"states" | "counties" | "tracts"} geoLevel
+   * @param {"states" | "counties" | "tracts" | "school_districts"} geoLevel
    */
   constructor(geoLevel) {
     this.geoLevel = geoLevel;
@@ -33,6 +33,8 @@ export default class GeoNames {
         return id.toString().padStart(5, "0");
       case "tracts":
         return id.toString().padStart(11, "0");
+      case "school_districts":
+        return id.toString().padStart(7, "0");
       default:
         return id.toString();
     }

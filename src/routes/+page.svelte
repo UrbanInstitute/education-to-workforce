@@ -4,7 +4,7 @@
   import RadioButton from "$components/Page1/RadioButton.svelte";
   import GeocoderWrapper from "$components/Geocoder/GeocoderWrapper.svelte";
   import BasicDropdown from "$components/BasicDropdown.svelte";
-  import { INIT_GEOCODER_OBJ } from "$utils/consts";
+  import { INIT_GEOCODER_OBJ, internalToSlug } from "$utils/consts";
   import { getAbsoluteUrl } from "$utils/urls";
   import { expandedMobileMediaQuery } from "$utils/mediaQuery.svelte.js";
   import cacheMap from "$utils/cacheMap";
@@ -144,7 +144,7 @@
   </RadioGroup>
   <div style="display:flex; justify-content: end; margin-top: var(--spacing-6);">
     {#if geoLevel && geoid !== "init" && eqid}
-      <Button href={getAbsoluteUrl(`indicators/${geoLevel}?geoid1=${geoid}&eqid=${eqid}`)}
+      <Button href={getAbsoluteUrl(`indicators/${internalToSlug(geoLevel)}?geoid1=${geoid}&eqid=${eqid}`)}
         >{data.archie.page.submit_button}</Button
       >
     {:else}

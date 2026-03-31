@@ -34,6 +34,9 @@ label: State
 value: counties
 label: County
 
+value: school_districts
+label: School districts
+
 value: tracts
 label: Neighborhood (census tract)
 []

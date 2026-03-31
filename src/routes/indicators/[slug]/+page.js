@@ -6,7 +6,7 @@ import eqData from "$archie/essential-questions.aml";
 import timeframeData from "$archie/timeframe.aml";
 // @ts-ignore
 import page from "$archie/page-2.aml";
-import { SLUG_ENTRIES } from "$utils/consts";
+import { SLUG_ENTRIES, slugToInternal } from "$utils/consts";
 
 import eqDataExcel from "$data/metadata/essential-questions.json";
 import indicators from "$data/metadata/indicators.json";
@@ -21,11 +21,14 @@ eqData.data.forEach((d) => {
 });
 
 function parseContextData(d) {
-  if (Object.keys(d).includes("disaggregate")) {
-    const disaggregate = d.disaggregate.replaceAll(", ", ",").split(",").map(Number);
-    return Object.assign({}, d, { disaggregate });
+  let result = { ...d };
+  if (result.disaggregate) {
+    result.disaggregate = result.disaggregate.replaceAll(", ", ",").split(",").map(Number);
   }
-  return d;
+  if (result.geo_levels) {
+    result.geo_levels = result.geo_levels.replaceAll(", ", ",").split(",");
+  }
+  return result;
 }
 
 const contextLookup = contextVars
@@ -40,7 +43,7 @@ export async function load({ params }) {
   return {
     national: national["00"],
     states,
-    slug: params.slug,
+    slug: slugToInternal(params.slug),
     // archie-ml related data
     metadata: {
       indicators,

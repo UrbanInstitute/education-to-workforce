@@ -4,13 +4,15 @@
   import Icon from "$icons/IconChevronCircle.svelte";
   import { logClickToGA } from "@urbaninstitute/dataviz-components";
 
-  let { contextData, contextVars, name } = $props();
+  let { contextData, contextVars, name, geoLevel } = $props();
   let showMoreContext = $state(false);
 
   let contextualDataVars = $derived.by(() => {
     const contextDataKeys = Object.keys(contextData);
     let result = [];
+    // skip over any context variables that have a defined geo_level and don't include this one
     for (let d of contextVars.values()) {
+      if (d.geo_levels && !d.geo_levels.includes(geoLevel)) continue;
       const isPrimary = !d.geo_id.includes("metric");
       let varItem = {
         label: d.geo_name,

@@ -7,7 +7,7 @@ class CacheMapClass {
 
   /**
    * Fetches data path on the geographic level and ID.
-   * @param {string} category - The category of data, can be "states" | "counties" | "tracts" | "autocomplete"
+   * @param {string} category - The category of data, can be "states" | "counties" | "tracts" | "school_districts" | "autocomplete"
    * @param {string} value - The ID of the geography (FIPS code), or the geo level for autocomplete
    * @param {number | string | null} secondaryValue - The secondary value (used for map ID)
    */
@@ -21,6 +21,8 @@ class CacheMapClass {
         return `${base}/data/metrics/counties/counties_${value.substring(0, 2)}.json`;
       case "tracts":
         return `${base}/data/metrics/tracts/tracts_${value.substring(0, 5)}.json`;
+      case "school_districts":
+        return `${base}/data/metrics/school_districts/school_districts_${value.substring(0, 2)}.json`;
       case "metadata":
         return `${base}/data/metadata/${value}.json`;
       case "context":
@@ -61,7 +63,7 @@ class CacheMapClass {
       // if file doesn't exist, throw error
       if (!res.ok) {
         // geography specific error messages
-        if (["counties", "tracts"].includes(category)) {
+        if (["counties", "tracts", "school_districts"].includes(category)) {
           alert(
             `${window.location.href}\n\nNo ${category} file matches the id: ${value + (secondaryValue ? ` (metric: ${secondaryValue})` : null)}. Please use the geography selector(s) to choose a valid geography.`
           );
@@ -76,7 +78,7 @@ class CacheMapClass {
       } else {
         let data = await res.json();
         // if object doesn't have the value, throw error
-        if (["counties", "tracts"].includes(category) && !data.hasOwnProperty(value)) {
+        if (["counties", "tracts", "school_districts"].includes(category) && !data.hasOwnProperty(value)) {
           alert(
             `${window.location.href}\n\n${value} not found in ${category} dataset. Please use the geography selector(s) to choose a valid geography.`
           );
@@ -100,6 +102,13 @@ class CacheMapClass {
                 `Tract ${data[geoid].init_name} - ${data[geoid].c_name}, ${getStateName(data[geoid].s_id, "full")}`;
               data[geoid].short_name =
                 `Tract ${data[geoid].init_name} - ${data[geoid].c_name}, ${getStateName(data[geoid].s_id, "abbr")}`;
+            });
+          } else if (category === "school_districts") {
+            Object.keys(data).forEach((geoid) => {
+              data[geoid].init_name = data[geoid].name;
+              data[geoid].s_id = geoid.substring(0, 2);
+              data[geoid].name = `${data[geoid].init_name}, ${getStateName(data[geoid].s_id, "full")}`;
+              data[geoid].short_name = `${data[geoid].init_name}, ${getStateName(data[geoid].s_id, "abbr")}`;
             });
           }
 

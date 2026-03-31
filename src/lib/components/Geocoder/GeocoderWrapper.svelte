@@ -52,6 +52,18 @@
       {...rest}
     />
   {/await}
+{:else if geoLevel == "school_districts"}
+  {#await cacheMap.fetchData("autocomplete", "school_districts")}
+    {@render disabledGeocoder("Loading...")}
+  {:then customData}
+    <Geocoder
+      types="address"
+      placeholder={archieData.searchPlaceholders.school_districts}
+      {customData}
+      localGeocoderOnly
+      {...rest}
+    />
+  {/await}
 {:else}
   {@render disabledGeocoder()}
 {/if}

@@ -3,7 +3,10 @@ title: About the Education-to-Workforce Framework Data Tool
 description: Explore data on education and workforce outcomes, and compare data by geography, income, race, ethnicity, and more.
 {}
 [+about_a]
-<p><em>Published May 13, 2025</em></p>
+
+<p><em>Last updated on June 18, 2025</em></p>
+
+<p><strong>Correction&#58;</strong> In the original version of this tool, some geographies showed negative numbers for the "Share of students with consistent attendance" metric. We identified the problem and updated the data (corrected 6/18/2025).</p>
 
 <p>This tool draws from publicly available national data sources to provide a comprehensive view of the education-to-workforce landscape in the United States. The tool pulls all education data directly from the <a href="https://educationdata.urban.org/data-explorer" target="_blank">Urban Institute’s Education Data Portal</a>, which includes geocoded information about schools, districts, and colleges in the US, allowing for geographic aggregation. For other data sources, the tool uses saved copies of datasets (latest update March 31, 2025). We hope to continue updating this tool with the most recent data moving forward.</p>
 
@@ -27,7 +30,7 @@ description: Explore data on education and workforce outcomes, and compare data 
 
 [+about_b]
 
-<p>Metric definitions come from the Education-to-Workforce Indicator Framework and are noted where metrics are displayed throughout the tool. Metrics measured at the school level are aggregated to the geographic level selected, meaning neighboring census tracts within the same county or school district might have different values (including missing values) for a metric. Data that are unavailable, or unavailable at scale, are noted with the individual metric cards. All geographies are from the 2020 Census definitions.</p>
+<p>Metric definitions come from the <a href="https://educationtoworkforce.org/" target="_blank">Education-to-Workforce Indicator Framework</a> and are noted where metrics are displayed throughout the tool. Metrics measured at the school level are aggregated to the geographic level selected, meaning neighboring census tracts within the same county or school district might have different values (including missing values) for a metric. Data that are unavailable, or unavailable at scale, are noted with the individual metric cards. All geographies are from the 2020 Census definitions.</p>
 
 <p>Information in source data might be suppressed or unavailable for small populations to protect privacy. In these cases, data are reported in the tool as missing. Time lags between the data collection from different sources might create temporal misalignment across sources. For more information on specific methodologies or for access to raw data files, refer to the individual source documentation linked above.</p>
 
