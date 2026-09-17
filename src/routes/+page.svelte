@@ -1,157 +1,66 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
 <script>
-  import Button from "$components/Button.svelte";
-  import RadioGroup from "$components/Page1/RadioGroup.svelte";
-  import RadioButton from "$components/Page1/RadioButton.svelte";
-  import GeocoderWrapper from "$components/Geocoder/GeocoderWrapper.svelte";
-  import BasicDropdown from "$components/BasicDropdown.svelte";
-  import { INIT_GEOCODER_OBJ, internalToSlug } from "$utils/consts";
-  import { getAbsoluteUrl } from "$utils/urls";
-  import { expandedMobileMediaQuery } from "$utils/mediaQuery.svelte.js";
-  import cacheMap from "$utils/cacheMap";
-  import getSelectedIndicators from "$utils/getSelectedIndicators.js";
+  import { setContext, tick } from "svelte";
+  import { afterNavigate } from "$app/navigation";
   import { Meta, logClickToGA } from "@urbaninstitute/dataviz-components";
+  import { getAbsoluteUrl } from "$utils/urls";
+  import { constructQueryParams } from "$utils/queryParameters";
+  import { ToolState } from "$lib/state/toolState.svelte.js";
+  import Hero from "$components/sections/Hero.svelte";
+  import IntroModal from "$components/sections/IntroModal.svelte";
+  import ControlPanel from "$components/sections/ControlPanel.svelte";
+  import MapModule from "$components/sections/MapModule.svelte";
+  import EqMetricsSection from "$components/sections/EqMetricsSection.svelte";
+  import AllDataSection from "$components/sections/AllDataSection.svelte";
+  import ReturnToTop from "$components/sections/ReturnToTop.svelte";
+  import SelectionAnnouncer from "$components/sections/SelectionAnnouncer.svelte";
 
   let { data } = $props();
 
-  // @ts-ignore
-  let eqDataSorted = $state(
-    data.archie.eqData.data.sort(
-      (/** @type {{ shorthand: string; }} */ a, /** @type {{ shorthand: string; }} */ b) =>
-        a.shorthand.localeCompare(b.shorthand)
-    )
-  );
-  let eqAvailability = $state();
+  /** @type {HTMLElement | undefined} */
+  let allDataEl = $state();
 
-  /** @type {number}*/
-  let selectionsHeight = $state(0);
+  // mobile-only control sheet; opened from the panel column's trigger or the second
+  // trigger at the top of the all-data section (inert at desktop widths)
+  let controlsOpen = $state(false);
 
-  // application state
-  /** @type {string | null} */
-  let geoLevel = $state(null);
+  // the modal scrims the tool region rather than the viewport, so the page owns the open
+  // flag: it marks the scrimmed content inert while the modal is up (2026-09-02)
+  let introOpen = $state(false);
 
-  // create results and derived geoid pieces of state
-  let selectedLocation = $state(INIT_GEOCODER_OBJ);
-  let geoid = $derived(selectedLocation.properties.geoid);
-
-  // create the eqid
-  let eqid = $state(null);
-
-  // create the state to load geoid data
-  let geoidData = $state(undefined);
-  let loading = $state(false);
-
-  // function to get geoid data based on geoLevel and geoid
-  const getGeoidData = () => {
-    if (geoid !== "init" && geoLevel) {
-      loading = true;
-      cacheMap.fetchData(geoLevel, geoid).then((res) => {
-        geoidData = res[geoid];
-        loading = false;
-      });
-    }
+  const openIntroModal = () => {
+    introOpen = true;
+    logClickToGA(/** @type {*} */ (undefined), "tool-intro-modal-open");
   };
 
-  // get all indicator availability based on the selected geoid
-  let allIndicators = $derived.by(() => {
-    if (geoidData && !loading) {
-      // force the pageData arg to take in a slug (even thought we're not on pages 2 and 3)
-      // @ts-ignore
-      return getSelectedIndicators(undefined, { ...data, slug: geoLevel }, geoidData);
-    }
-  });
+  // must run during component init: ToolState's $effects need this effect root
+  const params = constructQueryParams();
+  // svelte-ignore state_referenced_locally -- the merged load has no dependencies, so `data` never changes after init
+  const tool = new ToolState(params, data);
+  setContext("tool", tool);
 
-  $effect(() => {
-    // if there's geoid data, done loading, indicators are available
-    if (geoidData && !loading && allIndicators) {
-      // create a new array of eqData with the total number of indicators and the number of indicators with metric data
-      eqAvailability = eqDataSorted.map(
-        (
-          /** @type {{ total_indicators: number; id: string; in_tool_indicators: number; }} */ eq
-        ) => {
-          eq.total_indicators = allIndicators?.filter((ind) => {
-            if (typeof ind.eq_id == "string") ind.eq_id = [ind.eq_id];
-            return ind.eq_id.includes(eq.id);
-          }).length;
-          eq.in_tool_indicators = allIndicators?.filter((ind) => {
-            if (typeof ind.eq_id == "string") ind.eq_id = [ind.eq_id];
-            let hasMetricDataLength = ind.hasOwnProperty("hasMetricData")
-              ? ind?.hasMetricData?.length
-              : 0;
-            if (hasMetricDataLength) {
-              return ind.eq_id.includes(eq.id) && hasMetricDataLength > 0;
-            } else {
-              return false;
-            }
-          }).length;
-          return eq;
-        }
-      );
+  /**
+   * Scroll to a #map / #eq-metrics / #all-data anchor after the page has mounted.
+   * The anchors live on the always-rendered section wrappers below, so the targets
+   * exist as soon as the page renders even while section contents load async.
+   * @param {string | undefined} hash
+   */
+  async function scrollToHash(hash) {
+    if (!hash) return;
+    await tick();
+    document.getElementById(hash.slice(1))?.scrollIntoView();
+  }
+
+  afterNavigate((nav) => {
+    // initial entry (deep link) or arrival from another route (old-route redirects,
+    // nav links from /about). Same-route navigations are query-param writes from
+    // sveltekit-search-params — never re-scroll on those.
+    if (nav.type === "enter" || nav.from?.route.id !== nav.to?.route.id) {
+      scrollToHash(nav.to?.url.hash);
     }
   });
 </script>
-
-{#snippet selectionsSection()}
-  <h2><span class="number">1.</span> {data.archie.page.directions[0]}</h2>
-  <div class="dropdowns-container">
-    <BasicDropdown
-      id="geo-level-dropdown"
-      bind:value={geoLevel}
-      placeholder={"Choose data level"}
-      inlineLabel="Choose data level"
-      data={data.archie.page.geoLevelDropdownData}
-      on:change={(e) => {
-        selectedLocation = INIT_GEOCODER_OBJ;
-        geoidData = undefined;
-        loading = false;
-        eqid = null;
-        logClickToGA(e.target, "page-1-select-data-level");
-      }}
-    />
-    <GeocoderWrapper
-      {geoLevel}
-      onresult={(
-        /** @type {{ properties: { geoid: string; title: string; }; place_name: string; }} */ d
-      ) => {
-        selectedLocation = d;
-        getGeoidData();
-        logClickToGA(null, "page-1-geocoder-search");
-      }}
-      onclear={() => {
-        selectedLocation = INIT_GEOCODER_OBJ;
-      }}
-      width={260}
-    />
-  </div>
-
-  <hr />
-  <div class="title-2-container">
-    <h2>
-      <span class="number">2.</span><span>
-        {`${data.archie.page.directions[1]}${geoid == "init" ? "" : ` in ${selectedLocation.properties.title}`}`}
-        <span class="see-more">{@html data.archie.page.seeMoreCopy}</span>
-      </span>
-    </h2>
-  </div>
-  <RadioGroup disabled={geoid === "init"}>
-    {#each eqDataSorted as d (d.id)}
-      {@const availability = eqAvailability?.find(
-        (/** @type {{ id: number; }} */ eq) => eq.id === d.id
-      )}
-      <RadioButton title={d.shorthand} value={d.id} disabled={geoid === "init"} bind:group={eqid} onchange={(e) => {
-        logClickToGA(e.target, `page-1-select-eq-${d.id}`);
-      }}/>
-    {/each}
-  </RadioGroup>
-  <div style="display:flex; justify-content: end; margin-top: var(--spacing-6);">
-    {#if geoLevel && geoid !== "init" && eqid}
-      <Button href={getAbsoluteUrl(`indicators/${internalToSlug(geoLevel)}?geoid1=${geoid}&eqid=${eqid}`)}
-        >{data.archie.page.submit_button}</Button
-      >
-    {:else}
-      <Button buttonMode disabled>{data.archie.page.submit_button}</Button>
-    {/if}
-  </div>
-{/snippet}
 
 <Meta
   title={data.archie.page.title}
@@ -163,202 +72,121 @@
   publishDate={data.meta.publishDate}
   socialImage={getAbsoluteUrl(data.meta.socialImage)}
 />
-<div class="parent">
-  <div class="intro-text">
-    <div class="intro-text-content">
-      <h1>{data.archie.page.title}</h1>
-      <Button href={data.archie.page.data_download_link} target="_blank"
-        >{data.archie.page.data_download_text}</Button
-      >
-      {#each data.archie.page.copy as copy}
-        <p>
-          {@html copy}
-        </p>
-      {/each}
+
+<Hero content={data.archie.page} publishDate={data.meta.publishDate} shareUrl={data.meta.url} />
+<SelectionAnnouncer />
+<!-- everything below the hero: the intro modal's scrim fills this box, leaving the hero
+     copy readable on load, and `inert` keeps the scrimmed controls out of reach (mouse
+     and keyboard) for as long as it is up -->
+<div class="tool-region">
+  <IntroModal bind:open={introOpen} content={data.archie.page.modal} />
+  <div class="tool-layout" inert={introOpen}>
+    <div class="panel-col">
+      <ControlPanel
+        content={data.archie.page}
+        eqData={data.archie.eqData.data}
+        onInfoClick={openIntroModal}
+        bind:open={controlsOpen}
+      />
+      <ReturnToTop element={allDataEl} />
     </div>
-  </div>
-  <div class="selections" bind:clientHeight={selectionsHeight}>
-    <div class="selections-content">
-      {@render selectionsSection()}
+    <div class="right-col">
+      <section id="map">
+        <MapModule
+          content={data.archie.page}
+          contextVars={data.metadata.context}
+          onInfoClick={openIntroModal}
+        />
+      </section>
+      <section id="eq-metrics">
+        <EqMetricsSection timeframeOptions={data.archie.timeframeData.dropdown} />
+      </section>
+      <section id="all-data" bind:this={allDataEl}>
+        <AllDataSection
+          timeframeOptions={data.archie.timeframeData.dropdown}
+          onShowControls={() => (controlsOpen = true)}
+        />
+      </section>
     </div>
-    <!-- video on mute, autoplay -->
-    <video
-      style:height={expandedMobileMediaQuery.current ? `${selectionsHeight}px` : "unset"}
-      class={expandedMobileMediaQuery.current ? "mobile" : "desktop"}
-      autoplay
-      loop
-      muted
-      playsinline
-      aria-hidden="true"
-    >
-      <!-- fallback list -->
-      <source src="./video/video.webm" type="video/webm; codecs=vp9" />
-      <source src="./video/video-265.mp4" type="video/mp4; codecs=hevc" />
-      <source src="./video/video-264.mp4" type="video/mp4; codecs=avc1" />
-    </video>
   </div>
 </div>
 
 <style>
-  /* parent containing .intro-text and .selections */
-  .parent {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: stretch;
-    min-height: calc(100vh - var(--navbar-height));
+  /* containing block for the intro modal's absolutely positioned scrim; --nav-height
+     lives here so the modal's sticky offset and the control panel's share one value */
+  .tool-region {
+    position: relative;
+    --nav-height: 56px;
   }
 
-  /* intro text (left pane) */
-  .intro-text {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white !important;
-    padding: 4.875rem;
-    width: 42vw;
-    background-clip: padding-box;
-    display: flex;
-    justify-content: center;
+  /* One stacking context for the whole tool, so the intro modal's scrim covers every
+     layer inside it — map legend card, accordion drawers, the return-to-top button —
+     with a single z-index instead of having to out-rank each one. The button's z-index
+     of 400 was the one that punched through the scrim before this. */
+  .tool-layout {
+    position: relative;
+    z-index: 0;
+    display: grid;
+    grid-template-columns: 16.25rem minmax(0, 60rem); /* 260px | ≤960px */
+    gap: 5.625rem; /* 90px */
+    justify-content: center; /* grid content maxes out at 1310px */
+    padding: var(--spacing-8) var(--spacing-4) 0;
   }
 
-  .intro-text-content {
-    max-width: 30rem;
-  }
-
-  .intro-text-content h1 {
-    color: white !important;
-    margin-top: 0;
-    font-size: 44px;
-  }
-
-  .intro-text-content p {
-    color: white !important;
-    font-size: 14px !important;
-    line-height: var(--line-height-normal) !important;
-  }
-
-  .intro-text-content p :global(a) {
-    color: white !important;
-    text-decoration: underline;
-  }
-
-  /* selections area (right pane) */
-  .selections {
-    width: 58vw;
-    padding: 3rem;
+  /* .panel-col stretches the full grid height; the panel sticks to the top inside it
+     and the return-to-top button (margin-top: auto) sticks to the bottom */
+  .panel-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(227, 227, 227, 0.8);
   }
 
-  .selections-content {
-    max-width: 35rem;
+  .panel-col > :global(.control-panel) {
+    position: sticky;
+    top: calc(var(--nav-height, 0) + var(--spacing-3, 0.75rem));
   }
 
-  /* video */
-  video.desktop {
-    position: fixed;
-    right: 0;
-    top: var(--navbar-height, 56px);
-    min-width: 100%;
-    min-height: calc(100vh - var(--navbar-height));
-    width: auto;
-    height: auto;
-    z-index: -1000;
-    background-size: cover;
-    transition: 1s opacity;
+  .right-col {
+    min-width: 0;
   }
 
-  video.mobile {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1000;
-  }
-
-  hr {
-    border: 0;
-    border-top: 1px solid #9d9d9d;
-    margin: 3rem 0;
-  }
-
-  .dropdowns-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    font-size: 1.375rem !important;
-    font-weight: var(--font-weight-semibold) !important;
-  }
-
-  h2 .number {
-    align-self: start;
-    font-family: var(--font-family-sans);
-    font-weight: var(--font-weight-light);
-    font-size: var(--font-size-3xl);
-  }
-
-  .title-2-container .see-more :global(a) {
-    font-weight: var(--font-weight-normal) !important;
-    color: var(--color-blue-shade-dark);
-  }
-  .title-2-container .see-more {
-    white-space: nowrap;
-    font-size: var(--font-size-small);
-    font-family: var(--font-family-sans);
-    font-weight: var(--font-weight-normal) !important;
-    font-style: italic;
-    /* text-decoration: none; */
-  }
-  .title-2-container .see-more:hover {
-    text-decoration: underline;
-    text-decoration-color: var(--color-blue-shade-dark);
-  }
-
-  .title-2-container {
-    margin-bottom: 2.5rem;
-  }
-
-  /* set max-width manually */
-  @media (max-width: 60rem) {
-    .parent {
-      flex-direction: column;
-      height: unset;
+  /* basic stacking below the expanded-mobile breakpoint (full mobile treatment: Phase 8) */
+  @media (max-width: 64rem) {
+    .tool-layout {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-6);
     }
 
-    .intro-text {
-      width: 100%;
-      height: fit-content;
-      padding: 3.25rem 2rem;
+    /* the panel column is just the natural-width "Show controls" bar here, left-aligned
+       (the controls open in a fixed sheet from ControlPanel) */
+    .panel-col {
+      align-items: flex-start;
     }
 
-    .intro-text-content {
-      max-width: 39rem;
+    .panel-col > :global(.control-panel) {
+      position: static;
+    }
+  }
+
+  /* 540–1024px: wide enough to keep the trigger beside the content rather than above it,
+     but not wide enough for the full panel (which returns above 64rem). The panel column
+     narrows to a 100px gutter holding the "Filter" bar (sticky under the navbar, as on
+     desktop) and the return-to-top button; the controls themselves still open in the
+     mobile sheet. Must follow the 64rem block — same specificity, later wins. */
+  @media (min-width: 33.75rem) and (max-width: 64rem) {
+    .tool-layout {
+      grid-template-columns: 6.25rem minmax(0, 1fr); /* 100px gutter | content */
+      gap: var(--spacing-4);
     }
 
-    h1 {
-      font-size: var(--font-size-4xl) !important;
-      font-weight: var(--font-weight-semibold) !important;
+    /* the bar fills the gutter instead of taking its natural width */
+    .panel-col {
+      align-items: stretch;
     }
 
-    .selections {
-      width: 100%;
-      height: fit-content;
-      overflow: unset;
-      padding: unset;
-    }
-
-    .selections-content {
-      max-width: 39rem;
-      margin: 3.25rem 2rem;
+    .panel-col > :global(.control-panel) {
+      position: sticky;
+      top: calc(var(--nav-height, 0) + var(--spacing-3, 0.75rem));
     }
   }
 </style>

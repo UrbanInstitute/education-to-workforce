@@ -1,11 +1,16 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
 <script>
   import { urbanColors } from "@urbaninstitute/dataviz-components/utils";
+
   /**
-   * Hex color for arrow fill
-   * @type {string}
+   * @typedef {Object} Props
+   * @property {string} [fill] - hex color for the circle fill
+   * @property {number} [size] - height in px; the viewBox is 1.1x as wide
    */
-  export let fill = urbanColors.blue;
-  export let size = 27;
+
+  /** @type {Props} */
+  let { fill = urbanColors.blue, size = 27 } = $props();
 </script>
 
 <svg
@@ -14,6 +19,7 @@
   viewBox="0 0 {size * 1.1} {size}"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
 >
   <circle cx={size / 2} cy={size / 2} r={size / 2} {fill} />
   <path

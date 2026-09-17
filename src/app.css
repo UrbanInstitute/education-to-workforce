@@ -1,9 +1,94 @@
+/* A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. */
+
 /* Import Lato font from Google fonts */
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap");
 /* Import Futura PT font from typekit */
 @import url("//use.typekit.net/mai6yqm.css");
 
-
 :root {
   --font-weight-semibold: 600;
+  --box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+  /* width of a card section once its grid is down to one column: both card sections
+     (EqMetricsSection, AllDataSection) constrain their cards *and* the filters above them
+     to this, centered, so a single-column section reads as one narrow column rather than
+     full-bleed cards. Matches a card's width in the two-column grid at the layout's widest. */
+  --card-column-max-width: 29rem; /* 464px */
+}
+
+/* Canonical breakpoints. Media queries can't read custom properties, so this is a
+ * documented convention rather than a set of tokens: match one of these rather than
+ * introducing a near-miss (a lone `769px` on the about page was the last one).
+ *
+ *  33.75rem 540px   phone/tablet split: the control panel column becomes a ~100px sticky
+ *                   gutter rather than stacking above the tool, and the map module drops
+ *                   its floating legend card for one spanning a fixed-height map frame;
+ *                   mirrored in JS as gutterMediaQuery (above the split) and
+ *                   phoneMediaQuery (below it)
+ *   40rem   640px   nav tightens so its three links stay on one row
+ *   48rem   768px   mobile — the all-data filters fold into a drawer and its card grid
+ *                   drops to one column; mirrored in JS as mobileMediaQuery
+ *                   (mediaQuery.svelte.js)
+ *   64rem  1024px   tool layout stacks — control panel above the map, the EQ card grid
+ *                   drops to one 464px column centered under the map (the all-data grid
+ *                   stays at two), return-to-top goes fixed; mirrored in JS as
+ *                   expandedMobileMediaQuery
+ *   75rem  1200px   all-data card grid goes to three columns
+ *
+ * Element sizing (a card's max-width, the geocoder box) is not a breakpoint and is free
+ * to use whatever value the design calls for.
+ */
+
+/* Metric-card grid cell, shared by both card sections (EqMetricsSection, AllDataSection).
+ * Global rather than component-scoped because the export escape hatch below has to see
+ * into Download.svelte's own scope.
+ *
+ * Off-viewport cards skip render work; the placeholder height keeps the scrollbar from
+ * jumping as cards render in (dev-plan §3.4). Height axis only — and min-width: 0, because
+ * Chrome remembers a skipped cell's last rendered width as its min-content, which the
+ * grid-item default min-width: auto turns into a floor that overflows the viewport when
+ * the window shrinks. */
+.card-cell {
+  content-visibility: auto;
+  contain-intrinsic-height: auto 24rem;
+  min-width: 0;
+  /* content-visibility implies paint containment, which clips descendants to the cell's
+     overflow clip edge — that silently cut off the cards' drop shadows (--box-shadow on
+     the EQ grid, and the deeper selected/hover shadow in both). Push the clip edge out
+     past the shadow's reach (4px blur sideways, 4px offset + 4px blur below) instead of
+     padding the cell, which would move the card away from the section's left edge. */
+  overflow-clip-margin: 8px;
+}
+
+/* Export escape hatch. Download renders its offscreen copy of the chart into
+ * .download-image-container and waits for the chart's ResizeObserver to report a settled
+ * size. Inside a skipped subtree there is no layout, so that observation arrives as 0×0 —
+ * the handshake would resolve anyway and html2canvas would capture an empty box. Any card
+ * with an export in flight (the container is empty otherwise) therefore opts its own cell
+ * back into rendering. Matters most for the EQ section's "download all", which captures
+ * every card including those far off screen. */
+.card-cell:has(.download-image-container > *) {
+  content-visibility: visible;
+}
+
+/* Source/notes tooltip escape hatch. `content-visibility: auto` implies paint
+ * containment (see above), which clips the design-system tooltip to the cell's clip edge
+ * — cutting it off on the left and top when a narrow rows-of-3 card sits at the grid edge
+ * or the note is tall. While a tooltip is open the card is on-screen and interacted with,
+ * so dropping containment costs nothing and lets the tooltip overflow the cell freely. */
+.card-cell:has(.tooltip-outer) {
+  content-visibility: visible;
+  overflow: visible;
+}
+
+/* Screen-reader-only text: live regions and labels that carry no visual weight.
+ * https://css-tricks.com/inclusively-hidden/ — clipped rather than display:none so
+ * assistive tech still reads it. */
+.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }

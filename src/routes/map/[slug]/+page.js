@@ -1,33 +1,9 @@
-// import usaData from "$data/usa.json";
-// import stateData from "$data/states.json";
-// other metadata stuff about the EQs, indicators, metrics, etc.
-import national from "$data/metrics/national.json";
-import states from "$data/metrics/states.json";
-// @ts-ignore
-import page from "$archie/page-3.aml";
-// @ts-ignore
-import timeframeData from "$archie/timeframe.aml";
-import { SLUG_ENTRIES, slugToInternal } from "$utils/consts";
+// A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review.
 
-import indicators from "$data/metadata/indicators.json";
-import metrics from "$data/metadata/metrics.json";
-import GeoNames from "$utils/geoNames";
+import { SLUG_ENTRIES } from "$utils/consts";
 
-/** @type {import('./$types').PageLoad} */
-export async function load({ params }) {
-  const internalSlug = slugToInternal(params.slug);
-  const geoNames = new GeoNames(internalSlug);
-  // make sure geoNames fetches necessary metadata
-  await geoNames.fetchData();
-  return {
-    national: national["00"],
-    states,
-    archie: { page, timeframeData },
-    slug: internalSlug,
-    metadata: { indicators, metrics },
-    geoNames
-  };
-}
+// redirect stub: keep the old paths prerendered for direct hits; the page
+// component forwards to the single-page tool client-side (dev-plan §3.1)
 
 /** @type {import('./$types').EntryGenerator} */
 export function entries() {

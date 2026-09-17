@@ -1,3 +1,5 @@
+/* A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. */
+
 /* change font and box shadow, border radius, width */
 .mapboxgl-ctrl-geocoder {
   font-family: "Lato";
@@ -72,4 +74,10 @@
 
 .mapboxgl-ctrl-geocoder {
   border: 1px solid var(--color-gray);
+}
+
+/* dark-panel variant (v2 control panel): wrap the geocoder in .dark-panel.
+   The input stays white; on the blue panel the gray border reads as an artifact */
+.dark-panel .mapboxgl-ctrl-geocoder {
+  border-color: transparent;
 }

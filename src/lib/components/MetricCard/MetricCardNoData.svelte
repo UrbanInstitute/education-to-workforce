@@ -1,6 +1,9 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
 <script>
   import IconInformation from "$components/Icons/IconInformation.svelte";
   import { Tooltip } from "@urbaninstitute/dataviz-components";
+  import { withTerminalPeriod } from "$utils/terminalPeriod.js";
   /**
    * @property {import("$utils/types/MetricMetadataObject.js").MetricMetadataObject | undefined} metadata - The metadata for the card.
    * @property {string  | undefined} eyebrowText - The eyebrow text of the card
@@ -37,6 +40,7 @@
         <button
           bind:this={pinEl}
           aria-label="Source"
+          aria-expanded={showInfo}
           onclick={() => (showInfo = !showInfo)}
           style:height="20px"
         >
@@ -47,13 +51,13 @@
             {#if metadata.source_label?.trim()}
               <div>
                 <b>Source:</b>
-                {@html metadata.source_label}
+                {@html withTerminalPeriod(metadata.source_label)}
               </div>
             {/if}
             {#if metadata.notes_label?.trim()}
               <div>
                 <b>Notes:</b>
-                {@html metadata.notes_label}
+                {@html withTerminalPeriod(metadata.notes_label)}
               </div>
             {/if}
           </Tooltip>
@@ -131,6 +135,14 @@
     }
     100% {
       background-position: -200% 0;
+    }
+  }
+
+  /* the shimmer is decoration on top of the skeleton — hold it still, keeping the flat
+   * gradient so the card still reads as loading */
+  @media (prefers-reduced-motion: reduce) {
+    .loading {
+      animation: none;
     }
   }
 </style>

@@ -1,3 +1,5 @@
+// A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review.
+
 import { feature } from "topojson-client";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
 import state_info from "./state_info.csv";
@@ -6,28 +8,34 @@ import { getAbsoluteUrl } from "$utils/urls";
 
 const STATE_NAMES_TO_ID = state_info.reduce((acc, next) => {
   return acc.set(next.name, next.geoid);
-}, new Map());
+}, /** @type {Map<string, string>} */ (new Map()));
 
 const COUNTY_NAMES_TO_ID = county_info.reduce((acc, next) => {
   const { name, geoid, st_id } = next;
   if (!acc.has(st_id)) {
     acc.set(st_id, new Map());
   }
-  acc.get(st_id).set(name, geoid);
+  acc.get(st_id)?.set(name, geoid);
   return acc;
-}, new Map());
+}, /** @type {Map<string, Map<string, string>>} */ (new Map()));
 
 // stores fetched tract boundaries
 const tractBoundaryCache = new Map();
 
+/** @param {string} stateName */
 function getStateId(stateName) {
   return STATE_NAMES_TO_ID.get(stateName);
 }
 
+/**
+ * @param {string} countyName
+ * @param {string} stateId
+ */
 function getCountyId(countyName, stateId) {
   return COUNTY_NAMES_TO_ID.get(stateId)?.get(countyName);
 }
 
+/** @param {import("@mapbox/mapbox-gl-geocoder").Result} result */
 function getCountyFromResult(result) {
   let resultCounty;
   let resultState;
@@ -69,6 +77,7 @@ function getCountyFromResult(result) {
   return countyId;
 }
 
+/** @param {string} countyId */
 async function fetchCountyTracts(countyId) {
   if (!tractBoundaryCache.has(countyId)) {
     const tractsUrl = getAbsoluteUrl(`data/tracts-topo/${countyId}_tracts.json`);
@@ -83,9 +92,13 @@ async function fetchCountyTracts(countyId) {
   return tractBoundaryCache.get(countyId);
 }
 
+/**
+ * @param {*} inputTopojson
+ * @param {string} [object]
+ * @returns {import("geojson").FeatureCollection}
+ */
 function toGeoJson(inputTopojson, object = "tracts") {
-  /** @type {ReturnType<typeof feature<import("geojson").FeatureCollection>>} */
-  return feature(inputTopojson, object);
+  return /** @type {import("geojson").FeatureCollection} */ (feature(inputTopojson, object));
 }
 
 /**

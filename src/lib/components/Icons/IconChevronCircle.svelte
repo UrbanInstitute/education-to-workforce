@@ -1,12 +1,21 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
 <script>
   import { urbanColors } from "@urbaninstitute/dataviz-components/utils";
+
   /**
-   * Hex color for arrow fill
-   * @type {string}
+   * @typedef {Object} Props
+   * @property {string} [bgFill] - hex color for the circle fill (matches #DCDBDB)
+   * @property {string} [fill] - hex color for the chevron fill
+   * @property {number} [size] - width and height in px
    */
-  export let bgFill = urbanColors.gray_shade_medium; //matches #DCDBDB
-  export let fill = urbanColors.blue_shade_dark;
-  export let size = 36;
+
+  /** @type {Props} */
+  let {
+    bgFill = urbanColors.gray_shade_medium,
+    fill = urbanColors.blue_shade_dark,
+    size = 36
+  } = $props();
 </script>
 
 <svg
@@ -15,6 +24,7 @@
   viewBox="0 0 36 36"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
 >
   <ellipse cx={18} cy={18} rx={18} ry={18} fill={bgFill} />
   <path

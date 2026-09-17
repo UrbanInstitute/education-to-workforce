@@ -4,11 +4,11 @@ description: Explore data on education and workforce outcomes, and compare data 
 {}
 [+about_a]
 
-<p><em>Last updated on June 18, 2025</em></p>
+<p><em>Last updated on September 17, 2026</em></p>
 
-<p><strong>Correction&#58;</strong> In the original version of this tool, some geographies showed negative numbers for the "Share of students with consistent attendance" metric. We identified the problem and updated the data (corrected 6/18/2025).</p>
+<p>This tool draws from publicly available federal data sources to provide a comprehensive view of the education-to-workforce landscape in the United States. The tool pulls all education data directly from the <a href="https://educationdata.urban.org/" target="_blank">Urban Institute’s Education Data Portal</a>, which includes geocoded information about schools, districts, and colleges in the US, allowing for geographic aggregation. For other data sources, the tool uses saved copies of datasets (latest update: March 31, 2026). We hope to continue updating this tool with the most recent data moving forward.</p>
 
-<p>This tool draws from publicly available national data sources to provide a comprehensive view of the education-to-workforce landscape in the United States. The tool pulls all education data directly from the <a href="https://educationdata.urban.org/data-explorer" target="_blank">Urban Institute’s Education Data Portal</a>, which includes geocoded information about schools, districts, and colleges in the US, allowing for geographic aggregation. For other data sources, the tool uses saved copies of datasets (latest update March 31, 2025). We hope to continue updating this tool with the most recent data moving forward.</p>
+<p>We partnered with the Education Commission of the States (ECS) to identify metrics with publicly available state data using its State Data Reporting Dashboard, which we link to in the tool. For metrics where ECS names the data source as partial, we label the metric as having no data available to maintain consistency across definitions used for federal data.</p>
 
 <p>Data sources in the tool include the following:</p>
 []
@@ -30,9 +30,9 @@ description: Explore data on education and workforce outcomes, and compare data 
 
 [+about_b]
 
-<p>Metric definitions come from the <a href="https://educationtoworkforce.org/" target="_blank">Education-to-Workforce Indicator Framework</a> and are noted where metrics are displayed throughout the tool. Metrics measured at the school level are aggregated to the geographic level selected, meaning neighboring census tracts within the same county or school district might have different values (including missing values) for a metric. Data that are unavailable, or unavailable at scale, are noted with the individual metric cards. All geographies are from the 2020 Census definitions.</p>
+<p>Metric definitions come from the <a href="https://educationtoworkforce.org/" target="_blank">Education-to-Workforce Indicator Framework</a> and are noted where metrics are displayed throughout the tool. Metrics measured at the school level are aggregated to the geographic level selected, meaning neighboring census tracts within the same county or school district might have different values (including missing values) for a metric. Data that are unavailable are noted in the tool. All geographies are from the 2020 Census definitions.</p>
 
-<p>Information in source data might be suppressed or unavailable for small populations to protect privacy. In these cases, data are reported in the tool as missing. Time lags between the data collection from different sources might create temporal misalignment across sources. For more information on specific methodologies or for access to raw data files, refer to the individual source documentation linked above.</p>
+<p>Information in source data might be suppressed or unavailable for small populations to protect privacy. In these cases, data are reported in the tool as unavailable. Time lags between data collection from different sources might create temporal misalignment across sources. For more information on specific methodologies or for access to raw data files, refer to the individual source documentation linked above.</p>
 
 <p>We use the abbreviation AAPI for Asian American Pacific Islander and NHPI for Native Hawaiian and Pacific Islander. We use the term Hispanic to refer to people of Hispanic or Latino origin to align with how the data were collected. We recognize that this term may not be the preferred identifier for many, and we remain committed to using inclusive language whenever possible.</p>
 
@@ -43,7 +43,7 @@ intro: This data tool was supported by the Bill & Melinda Gates Foundation. We a
 
 [credits.items]
 label: Research
-content: <a href="https://www.urban.org/author/shana-metcalf" target="_blank">Shana Metcalf</a>, <a href="https://www.urban.org/author/james-carter" target="_blank">Jay Carter</a>, <a href="https://www.urban.org/author/maggie-reeves" target="_blank">Maggie Reeves</a>, <a href="https://www.urban.org/author/kristin-blagg" target="_blank">Kristin Blagg</a>, <a href="https://www.urban.org/author/rachel-lamb" target="_blank">Rachel Lamb</a>, <a href="https://www.urban.org/author/sonia-torres-rodriguez" target="_blank">Sonia Torres Rodríguez</a>, and <a href="https://www.urban.org/author/thiyaghessan-poongundranar" target="_blank">Thiyaghessan Poongundranar</a>
+content: <a href="https://www.urban.org/author/shana-metcalf" target="_blank">Shana Metcalf</a>, <a href="https://www.urban.org/author/james-carter" target="_blank">Jay Carter</a>, <a href="https://www.urban.org/author/maggie-reeves" target="_blank">Maggie Reeves</a>, <a href="https://www.urban.org/author/kristin-blagg" target="_blank">Kristin Blagg</a>, <a href="https://www.urban.org/author/rachel-lamb" target="_blank">Rachel Lamb</a>, <a href="https://www.urban.org/author/sonia-torres-rodriguez" target="_blank">Sonia Torres Rodríguez</a>, and <a href="https://www.urban.org/author/thiyaghessan-poongundranar" target="_blank">Thiyaghessan Poongundranar</a>
 
 label: Data Visualization and Development
 content: <a href="https://www.urban.org/author/ben-kates" target="_blank">Ben Kates</a> and <a href="https://www.urban.org/author/mitchell-thorson" target="_blank">Mitchell Thorson</a>

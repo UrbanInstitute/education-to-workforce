@@ -1,3 +1,5 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
 <script>
   /**
    * @param {string[]} header - Array of strings for the table header

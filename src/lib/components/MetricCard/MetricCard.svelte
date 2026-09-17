@@ -1,415 +1,281 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
+<!-- @component
+Shared metric card for the EQ and all-data grids (requirements §4.8; mockups 2–8,
+lines.jpg). All decision logic lives in getChartData.js — this is chrome plus one
+{#if} chain over selectChartVariant. The single cardBody snippet renders twice:
+once for the screen and once (isDownload=true, with the ready callback) as the
+Download component's offscreen export copy.
+-->
 <script>
   import IconInformation from "$icons/IconInformation.svelte";
-  import { Tooltip, logClickToGA } from "@urbaninstitute/dataviz-components";
-  import { formatFun } from "$utils/formatFun";
+  import { Tooltip, LogoUrbanWide, logClickToGA } from "@urbaninstitute/dataviz-components";
   import altTemplates from "$data/archie-ml/chart-alt.aml";
-  import { urbanColors } from "@urbaninstitute/dataviz-components/utils";
-  import ViewBreakdowns from "./ViewBreakdowns.svelte";
-  import BarChart from "$components/BarChart/BarChart.svelte";
-  import Table from "$components/Table.svelte";
-  import BasicDropdown from "$components/BasicDropdown.svelte";
-  import { DROPDOWN_WIDTH } from "$utils/consts";
-  import { formatDynamicText } from "$utils/dynamicText";
-  import TrendlineChartWrapper from "$components/TrendlineChart/TrendlineChartWrapper.svelte";
-  import getTableData from "$utils/getTableData";
-  import Download from "./Download.svelte";
-  import Self from "./MetricCard.svelte";
-  import { LogoUrbanWide } from "@urbaninstitute/dataviz-components";
-  import { getBarData, getTrendData } from "$utils/getMetricCardData";
-  import getDisaggregateDropdownData from "$utils/getDisaggregateDropdownData";
-  import { Previous } from "runed";
+  import pageContent from "$data/archie-ml/page-tool.aml";
+  import ChartLegend from "$components/charts/ChartLegend.svelte";
+  import BarGroup from "$components/charts/BarGroup.svelte";
+  import MultiLineChart from "$components/charts/MultiLineChart.svelte";
+  import DisaggregatedBars from "$components/charts/DisaggregatedBars.svelte";
+  import DisaggregatedTrends from "$components/charts/DisaggregatedTrends.svelte";
+  import Download from "$components/Download/Download.svelte";
+  import { readySignal } from "$utils/readySignal";
+  import {
+    getBarGroupData,
+    getTrendSeriesData,
+    getBarLegendItems,
+    getTrendLegendItems,
+    hasDisaggregateData,
+    getDisaggregatedData,
+    selectChartVariant,
+    resolveDisaggPrefix,
+    getChartAltText
+  } from "$utils/getChartData";
+  import { isDisaggOnly } from "$utils/disaggregates";
+  import { withTerminalPeriod } from "$utils/terminalPeriod.js";
 
   /**
-   * @property {Array<import("$utils/types/GeoidDataObject.js").GeoidDataObject>} [data] - The data to be displayed in the card.
-   * @property {import("$utils/types/MetricMetadataObject.js").MetricMetadataObject} metadata - The metadata for the card.
-   * @property {string} [titleText=null] - The title of the card.
-   * @property {string} eyebrowText - The eyebrow text of the card.
-   * @property {boolean} [noData=false] - A flag to indicate if the card has no data.
-   * @property {boolean} [selected=false] - A flag to indicate if the card has been selected (map page only).
-   * @property {boolean} [stateOnly=false] - A flag to indicate if the card is only displaying states.
-   * @property {boolean} [loading=false] - A flag to indicate if the card is loading.
-   * @property {string|undefined} [downloadedFlag=undefined] - A flag to indicate if the card has been downloaded.
-   * @property {function} [onclick=() => {}] - The function to be called when the card is clicked.
-   * @property {boolean} [selectable=false] - A flag to indicate if the card is selectable/clickable (for map page only).
+   * @typedef {Object} Props
+   * @property {import("$utils/types/MetricMetadataObject.js").MetricMetadataObject} metadata
+   * @property {import("$utils/getChartData").CardGeography[]} geographies - role-tagged, from ToolState.cardGeographies
+   * @property {string} [timeframe]
+   * @property {string} [disagg]
+   * @property {string} [eyebrowText] - the parent indicator's name (both grids — settled 2026-07-15)
+   * @property {boolean} [selectable] - EQ grid only: card click selects the map metric
+   * @property {boolean} [selected]
+   * @property {boolean} [elevated] - EQ grid only: resting drop shadow. Separate from
+   *   `selectable` because disagg-only cards sit in that grid without being selectable.
+   * @property {boolean} [compact] - all-data grid: tighter padding for the smaller cards
+   * @property {(metricId: number) => void} [onclick]
    */
+
+  /** @type {Props} */
   let {
-    data,
-    metadata = {},
-    titleText = null,
-    eyebrowText,
-    noData = false,
-    selectedFlag = false,
-    stateOnly = false,
-    loading = false,
+    metadata,
+    geographies,
     timeframe = "recent",
-    downloadedFlag = false,
-    breakdownsOpenFlag = $bindable(false),
-    dropdownValue = undefined,
-    onclick = () => {},
+    disagg = "none",
+    eyebrowText = undefined,
     selectable = false,
-    pinYear = false
+    selected = false,
+    elevated = false,
+    compact = false,
+    onclick = () => {}
   } = $props();
 
-  const metricAccessor = "m" + metadata.metric_id;
-  const hasDisaggregatesFlag = metadata.disag_available && metadata.disag_available !== "FALSE";
-
-  // if string, convert to single value array
-  const yearsAvailable =
-    typeof metadata.years_available == "string"
-      ? [+metadata.years_available]
-      : metadata.years_available.map((/** @type {string | number} */ d) => +d);
-  // get most recent year available
-  let recentYear = $derived.by(() => {
-    let result = Math.max(...yearsAvailable).toString();
-    // if the most recent year specified in metadata doesn't exist in this selection,
-    // find the most recent year that does exist and display it
-    // this functionality can be circumvented by setting `pinYear = false`
-    if (data[0].data[metricAccessor][result] === undefined && !pinYear) {
-      // reverse the years array (with slice for new copy) to find the most recent year with data
-      result = yearsAvailable
-        .slice()
-        .reverse()
-        .find((year) => data[0].data[metricAccessor][year] !== undefined)
-        .toString();
-    }
-    return result;
-  });
-
-  // visualization data
-  let barData = $derived(getBarData(data, metricAccessor, recentYear));
-  let trendData = $derived(getTrendData(data, metricAccessor, yearsAvailable));
-  let hasTrendData = $derived(trendData.reduce((acc, curr) => curr.data.length > 1 || acc, false));
-
-  // setup tooltip elements
-  let pinEl = $state();
-  let showInfo = $state(false);
-
-  // get disaggregate dropdown data
-  const disaggregateDropdownData = getDisaggregateDropdownData(metadata.disag_available);
-
-  // get the appropriate dropdown data based on timeframe
-  let dropdownData = $derived(
-    timeframe === "recent" ? disaggregateDropdownData.recent : disaggregateDropdownData.all
+  // metrics.json entries always carry years_available; the shared MetricMetadataObject
+  // typedef marks it optional, so cast to the chart-data shape once
+  const chartMetadata = $derived(
+    /** @type {import("$utils/getChartData").ChartMetricMetadata} */ (/** @type {*} */ (metadata))
   );
 
-  const previousTimeframe = new Previous(() => timeframe);
-
-  // if the timeframe changes while the breakdowns flag is open, reset the dropdown value
-  $effect(() => {
-    if (previousTimeframe.current && breakdownsOpenFlag)
-      dropdownValue =
-        timeframe === "recent"
-          ? disaggregateDropdownData.recent[0].value
-          : disaggregateDropdownData.all[0].value;
-  });
-
-  // if disaggregates flag is true and dropdown value is undefined (by default), set to first value
-  // if the dropdownValue has a value, that means it's been initialized/interacted with
-  // we don't want the value to reset when the image is being downloaded
-  $effect(() => {
-    if (hasDisaggregatesFlag && dropdownValue == undefined)
-      dropdownValue =
-        timeframe === "recent"
-          ? disaggregateDropdownData.recent[0].value
-          : disaggregateDropdownData.all[0].value;
-  });
-
-  // setup the table data
-  let tableData = $derived(
-    getTableData(
-      data,
-      timeframe,
-      "m" + metadata.metric_id,
-      yearsAvailable,
-      recentYear,
-      dropdownValue,
-      metadata.metric_type
-    )
+  let barGroup = $derived(getBarGroupData(geographies, chartMetadata));
+  let trendSeries = $derived(
+    getTrendSeriesData(geographies, metadata.metric_id, chartMetadata.years_available)
   );
+  let variant = $derived(selectChartVariant(timeframe, disagg, chartMetadata));
+  let isDisaggVariant = $derived(variant === "disaggBars" || variant === "disaggTrends");
+  // the prefix actually rendered, which differs from `disagg` only for disaggregate-only
+  // metrics under "none" — they substitute their own rather than render an empty base
+  // chart (dev-plan §11.4)
+  let disaggPrefix = $derived(resolveDisaggPrefix(disagg, chartMetadata));
+  // a disaggregate filter never swaps a card back to its base chart: cards without
+  // subgroup data — whether the metric doesn't offer the disaggregate or claims it but
+  // publishes nothing — show the no-data message instead (settled 2026-07-15)
+  let showDisaggNoData = $derived(
+    isDisaggVariant &&
+      !hasDisaggregateData(geographies, chartMetadata, /** @type {string} */ (disaggPrefix))
+  );
+  let disaggData = $derived(
+    isDisaggVariant && !showDisaggNoData
+      ? getDisaggregatedData(geographies, chartMetadata, /** @type {string} */ (disaggPrefix), {
+          timeframe: variant === "disaggTrends" ? "all" : "recent"
+        })
+      : null
+  );
+  // disaggregate-only metrics can't be the map layer (no shard exists), so their cards
+  // must not offer click-to-select even in the EQ grid
+  let isSelectable = $derived(selectable && !isDisaggOnly(metadata));
+  // legend items describe roles (geography + style), identical across subgroups, so the
+  // disaggregated variants reuse the base bar/trend legends
+  let legendItems = $derived(
+    variant === "trend" || variant === "disaggTrends"
+      ? getTrendLegendItems(trendSeries)
+      : getBarLegendItems(barGroup.bars)
+  );
+  let chartLabel = $derived(getChartAltText(geographies, chartMetadata, altTemplates, { variant }));
 
-  // setup the hover flag
   let hoverFlag = $state(false);
+  let showInfo = $state(false);
+  /** @type {HTMLElement | undefined} */
+  let pinEl = $state();
+  /** @type {ReturnType<typeof Download> | undefined} */
+  let download = $state();
 
-  let cardDownload = $state();
+  const primaryName = $derived(geographies[0]?.short_name ?? geographies[0]?.name ?? "");
 
-  export async function handleExport() {
-    if (cardDownload) {
-      return cardDownload.handleExport();
-    }
+  /**
+   * Container-level click-to-select: ignore clicks on the card's own interactive
+   * chrome (source tooltip, download) — everything else, including the charts,
+   * selects the metric.
+   * @param {MouseEvent} e
+   */
+  function handleContentClick(e) {
+    if (/** @type {HTMLElement} */ (e.target).closest(".card-interactive")) return;
+    onclick(metadata.metric_id);
   }
 
-  let chartLabel = $derived.by(getChartLabel);
-
-  function getAltTemplate() {
-    if (timeframe === "recent" || !hasTrendData) {
-      let options = altTemplates.barchart;
-      if (stateOnly) {
-        if (data.length > 2) {
-          return options.state_compare;
-        }
-        return options.state;
-      }
-      // else this is county or tract
-      if (data.length > 3) {
-        // multiple counties or tracts
-        return options.county_tract_compare;
-      }
-      return options.county_tract;
-      // single county or tract
-    } else {
-      let options = altTemplates.linechart;
-      if (stateOnly) {
-        if (data.length > 2) {
-          return options.state_compare;
-        } else {
-          return options.state;
-        }
-      } else {
-        if (data.length > 3) {
-          return options.county_tract_compare;
-        } else {
-          return options.county_tract;
-        }
-      }
-    }
+  /** Capture the card as a PNG Blob without downloading (EQ-section download-all). */
+  export function renderToBlob() {
+    return /** @type {NonNullable<typeof download>} */ (download).renderToBlob();
   }
 
-  function getChartLabel() {
-    const template = getAltTemplate();
-    // for bar charts
-    if (timeframe === "recent" || !hasTrendData) {
-      // state level
-      let data = {
-        year: recentYear,
-        metric: metadata.metric_full_name,
-        location: barData[0].name,
-        value: formatFun(barData[0].value, metadata.metric_type),
-        national_value: formatFun(barData[barData.length - 1].value, metadata.metric_type)
-      };
-      if (!stateOnly) {
-        // county or tract
-        data.state = barData[1].name;
-        data.state_value = formatFun(barData[1].value, metadata.metric_type);
-        if (barData.length > 3) {
-          // comparison present
-          data.comparison_location = barData[2].name;
-          data.comparison_value = formatFun(barData[2].value, metadata.metric_type);
-        }
-      } else if (barData.length > 2) {
-        data.comparison_location = barData[1].name;
-        data.comparison_value = formatFun(barData[1].value, metadata.metric_type);
-      }
-      return formatDynamicText(template, data);
-    } else {
-      // for line charts
-      let year_first = trendData[0].data[0].year;
-      let year_last = trendData[0].data[trendData[0].data.length - 1].year;
-      let value_first = formatFun(trendData[0]?.data[0]?.value, metadata.metric_type);
-      let value_last = formatFun(
-        trendData[0]?.data[trendData[0].data.length - 1]?.value,
-        metadata.metric_type
-      );
-      let metric = metadata.metric_full_name;
-      let location = trendData[0].name;
-      let national_value_first = formatFun(
-        trendData[trendData.length - 1].data[0].value,
-        metadata.metric_type
-      );
-      let national_value_last = formatFun(
-        trendData[trendData.length - 1].data[trendData[trendData.length - 1].data.length - 1].value,
-        metadata.metric_type
-      );
-      let data = {
-        year_first,
-        year_last,
-        metric,
-        location,
-        value_first,
-        value_last,
-        national_value_first,
-        national_value_last
-      };
-      if (!stateOnly) {
-        data.state = trendData[1].name;
-        data.state_value_first = formatFun(trendData[1].data[0].value, metadata.metric_type);
-        data.state_value_last = formatFun(
-          trendData[1].data[trendData[1].data.length - 1].value,
-          metadata.metric_type
-        );
-        if (trendData.length > 3) {
-          // comparison present
-          data.comparison_location = trendData[2].name;
-          data.comparison_value_first = formatFun(trendData[2].data[0].value, metadata.metric_type);
-          data.comparison_value_last = formatFun(
-            trendData[2].data[trendData[2].data.length - 1].value,
-            metadata.metric_type
-          );
-        }
-      } else if (trendData.length > 2) {
-        // state only but comparison present
-        data.comparison_location = trendData[1].name;
-        data.comparison_value_first = formatFun(trendData[1].data[0].value, metadata.metric_type);
-        data.comparison_value_last = formatFun(
-          trendData[1].data[trendData[1].data.length - 1].value,
-          metadata.metric_type
-        );
-      } else {
-      }
-      return formatDynamicText(template, data);
-    }
+  /** Capture and download the card image. */
+  export function handleExport() {
+    return /** @type {NonNullable<typeof download>} */ (download).handleExport();
   }
 </script>
 
-{#snippet cardTitle()}
-  <div class="card-title-container">
-    <div class="card-title" class:no-data={noData} class:underlined={hoverFlag && selectable}>
-      {metadata.metric_full_name}
+{#snippet cardBody(
+  /** @type {boolean} */ isDownload,
+  /** @type {(() => void) | undefined} */ onready = undefined
+)}
+  <div class="card-body">
+    <div class="card-title-container">
+      <div class="card-title" class:underlined={!isDownload && hoverFlag && isSelectable}>
+        {metadata.metric_full_name}
+      </div>
+      {#if (variant === "bars" || variant === "disaggBars") && !showDisaggNoData}
+        <div class="card-subtitle">{barGroup.displayYear}</div>
+      {/if}
     </div>
-    {#if !noData && (timeframe == "recent" || !hasTrendData)}
-      <div class="card-subtitle">{recentYear}</div>
+    {#if !showDisaggNoData}
+      <ChartLegend items={legendItems} />
+    {/if}
+    {#if showDisaggNoData}
+      <div class="disagg-no-data" {@attach readySignal(onready)}>
+        {pageContent.filters.disaggNoData}
+      </div>
+    {:else if variant === "bars"}
+      <div class="viz" role="group" aria-label={chartLabel}>
+        <BarGroup
+          bars={barGroup.bars}
+          domain={barGroup.domain}
+          diverging={barGroup.diverging}
+          formatType={metadata.metric_type}
+          {onready}
+        />
+      </div>
+    {:else if variant === "trend"}
+      <div class="viz" role="img" aria-label={chartLabel}>
+        <MultiLineChart
+          series={trendSeries}
+          formatType={metadata.metric_type}
+          {isDownload}
+          {onready}
+        />
+      </div>
+    {:else if variant === "disaggBars" && disaggData}
+      <div class="viz" role="group" aria-label={chartLabel}>
+        <DisaggregatedBars
+          subgroups={disaggData.subgroups}
+          domain={disaggData.domain}
+          diverging={disaggData.diverging}
+          formatType={metadata.metric_type}
+          {onready}
+        />
+      </div>
+    {:else if disaggData}
+      <div class="viz" role="group" aria-label={chartLabel}>
+        <DisaggregatedTrends
+          subgroups={disaggData.subgroups}
+          domain={disaggData.domain}
+          formatType={metadata.metric_type}
+          {isDownload}
+          {onready}
+        />
+      </div>
+    {/if}
+    {#if isDownload}
+      <div class="download-logo">
+        <LogoUrbanWide />
+      </div>
+      {#if metadata.source_label}
+        <div class="download-source">
+          <b>Source:</b>
+          {@html withTerminalPeriod(metadata.source_label)}
+        </div>
+      {/if}
+      {#if metadata.notes_label}
+        <div class="download-source">
+          <b>Notes:</b>
+          {@html withTerminalPeriod(metadata.notes_label)}
+        </div>
+      {/if}
     {/if}
   </div>
 {/snippet}
 
-{#snippet viz()}
-  {#if timeframe == "recent" || !hasTrendData}
-    <BarChart
-      data={barData}
-      {stateOnly}
-      formatType={metadata.metric_type}
-      {downloadedFlag}
-      ariaLabel={chartLabel}
-    />
-  {:else if timeframe == "all"}
-    <TrendlineChartWrapper
-      data={trendData}
-      formatType={metadata.metric_type}
-      {downloadedFlag}
-      ariaLabel={chartLabel}
-    />
-  {/if}
-{/snippet}
-
-<div class="{metadata.metric_id}-card-container" id="{metadata.metric_id}-card-container">
-  {#if titleText}
-    <div class="title-text">{titleText}</div>
-  {/if}
+<div class="metric-card-v2">
   {#if eyebrowText}
-    <div class="eyebrow-text" class:no-data={noData}>{@html eyebrowText}</div>
+    <div class="eyebrow-text">{@html eyebrowText}</div>
   {/if}
-
-  <!-- apply selected container if it's selectable, selected/hovered, and not downloaded -->
+  <!-- Mouse selection lives on the container so the chart hover layers (BarHoverLayer,
+       Voronoi) underneath still receive pointer events; clicks on them bubble up here.
+       Keyboard/AT selection goes through the pointer-events:none overlay button below. -->
+  <!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->
   <div
     class="content"
-    class:selected={selectable && (selectedFlag || hoverFlag) && !downloadedFlag}
+    class:elevated
+    class:compact
+    class:selectable={isSelectable}
+    class:selected={isSelectable && (selected || hoverFlag)}
+    onmouseenter={isSelectable ? () => (hoverFlag = true) : undefined}
+    onmouseleave={isSelectable ? () => (hoverFlag = false) : undefined}
+    onclick={isSelectable ? handleContentClick : undefined}
   >
-    {@render cardTitle()}
+    {@render cardBody(false)}
 
-    {#if !noData}
-      {@render viz()}
-
-      {#if selectable}
-        <button
-          aria-label="Select metric: {metadata.metric_full_name}"
-          class="card-base-interaction-layer"
-          onmouseenter={() => (hoverFlag = true)}
-          onmouseleave={() => (hoverFlag = false)}
-          onclick={() => onclick(metadata.metric_id)}
-          style:cursor={selectable ? "pointer" : "default"}
-          style:pointer-events={"auto"}
-        ></button>
-      {/if}
-      {#if downloadedFlag}
-        <div style="display:flex; justify-content:end; margin-right:.25rem;">
-          <LogoUrbanWide />
-        </div>
-        {#if metadata.source_label}
-          <div style:color="var(--color-gray-shade-darker)">
-            <b>Source:</b>
-            {@html metadata.source_label}
-          </div>
-        {/if}
-        {#if metadata.notes_label}
-          <div style:color="var(--color-gray-shade-darker)">
-            <b>Notes:</b>
-            {@html metadata.notes_label}
-          </div>
-        {/if}
-      {:else}
-        <div class="source-container card-interactive">
-          <div class="source">Source</div>
-          <button
-            bind:this={pinEl}
-            aria-label="Source"
-            onclick={(e) => {
-              showInfo = !showInfo;
-              logClickToGA(e.target, "metric-card-source-toggle");
-            }}
-            style:height="20px"
-          >
-            <IconInformation />
-          </button>
-        </div>
-      {/if}
-      <div class="card-interactive card-full-width">
-        <Download id={metadata.metric_id} bind:this={cardDownload} filename={`${metadata.metric_full_name} in ${barData[0].name}`}>
-          <Self
-            {metadata}
-            {titleText}
-            {eyebrowText}
-            {noData}
-            {selectedFlag}
-            {stateOnly}
-            {loading}
-            {timeframe}
-            {data}
-            downloadedFlag={true}
-            {breakdownsOpenFlag}
-            {dropdownValue}
-          />
-        </Download>
-      </div>
-      <!-- if disaggregates exist, show the content -->
-      {#if hasDisaggregatesFlag}
-        {#if !downloadedFlag || (downloadedFlag && breakdownsOpenFlag)}
-          <hr
-            style="height:1px;border-width:0;margin:0;"
-            style:width="100%"
-            style:background-color={urbanColors.gray_shade_medium}
-            style:color={urbanColors.gray_shade_medium}
-          />
-        {/if}
-        {#if downloadedFlag && breakdownsOpenFlag}
-          <div style:color="var(--color-gray-shade-darker)">
-            {dropdownData.find((d) => d.value === dropdownValue)?.label}
-          </div>
-          <Table header={tableData.header} rows={tableData.rows} />
-        {:else if !downloadedFlag}
-          <div class="card-interactive card-full-width">
-            <ViewBreakdowns bind:open={breakdownsOpenFlag} plural={dropdownData.length > 1}>
-              <div>
-                {#if dropdownData.length > 1}
-                  <BasicDropdown
-                    id={"breakdown-" + metadata.metric_id}
-                    bind:value={dropdownValue}
-                    data={dropdownData}
-                    inlineLabel="Breakdown"
-                    placeholder={null}
-                    dropdownWidth={DROPDOWN_WIDTH}
-                  ></BasicDropdown>
-                {:else}
-                  <span style:color="var(--color-gray-shade-darker)">{dropdownData[0].label}</span>
-                {/if}
-
-                <div style="margin-top: var(--spacing-7);">
-                  <Table header={tableData.header} rows={tableData.rows} />
-                </div>
-              </div>
-            </ViewBreakdowns>
-          </div>
-        {/if}
-      {/if}
+    {#if isSelectable}
+      <button
+        aria-label="Select metric: {metadata.metric_full_name}"
+        aria-pressed={selected}
+        class="card-base-interaction-layer"
+        onclick={() => onclick(metadata.metric_id)}
+      ></button>
     {/if}
+
+    <div class="card-footer card-interactive">
+      <div class="source-container">
+        <div class="source">Source</div>
+        <button
+          bind:this={pinEl}
+          aria-label="Source"
+          aria-expanded={showInfo}
+          onclick={(e) => {
+            showInfo = !showInfo;
+            logClickToGA(/** @type {HTMLElement} */ (e.currentTarget), "metric-card-source-toggle");
+          }}
+        >
+          <IconInformation />
+        </button>
+      </div>
+      <Download
+        id={metadata.metric_id}
+        bind:this={download}
+        filename="{metadata.metric_full_name} in {primaryName}"
+      >
+        {#snippet children(onready)}
+          <!-- export copy mirrors the on-screen card: eyebrow above the framed box
+               (v1's downloaded image included both) -->
+          {#if eyebrowText}
+            <div class="eyebrow-text">{@html eyebrowText}</div>
+          {/if}
+          <div class="content">
+            {@render cardBody(true, onready)}
+          </div>
+        {/snippet}
+      </Download>
+    </div>
   </div>
 </div>
 <div class="card-tooltip">
@@ -418,13 +284,13 @@
       {#if metadata.source_label}
         <div>
           <b>Source:</b>
-          {@html metadata.source_label}
+          {@html withTerminalPeriod(metadata.source_label)}
         </div>
       {/if}
       {#if metadata.notes_label}
         <div>
           <b>Notes:</b>
-          {@html metadata.notes_label}
+          {@html withTerminalPeriod(metadata.notes_label)}
         </div>
       {/if}
     </Tooltip>
@@ -432,30 +298,32 @@
 </div>
 
 <style>
-  .card-tooltip {
-    position: absolute;
-  }
-  .card-tooltip :global(.tooltip-outer) {
-    pointer-events: all !important;
-  }
-  .card-container {
+  .metric-card-v2 {
     width: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
-  .title-text {
-    font-family: var(--font-family-sans-alt);
-    font-size: 28px;
-    font-weight: var(--font-weight-semibold);
-    line-height: 137.5%;
-    margin-bottom: var(--spacing-1);
-    color: var(--color-gray-shade-darkest);
+  /* one shared body for the screen card and the offscreen export copy, so the
+     export keeps the same vertical rhythm without relying on .content */
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  /* card layout owns the extra space below the legend: the shared card-body gap gives
+     spacing-4, and this adds spacing-2 to reach spacing-6 (24px) beneath the legend only,
+     without widening the title→legend gap above it */
+  .card-body :global(.chart-legend) {
+    margin-bottom: var(--spacing-2);
   }
 
   .eyebrow-text {
     font-size: var(--font-size-small);
     text-transform: uppercase;
-    margin-bottom: 1rem;
-    color: var(--color-gray-shade-darkest);
+    margin-bottom: var(--spacing-3);
+    color: var(--color-gray-shade-darker);
   }
 
   .eyebrow-text :global(.divider) {
@@ -466,18 +334,32 @@
   .content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: var(--spacing-4);
     background-color: var(--color-gray-shade-lightest);
     border: 1px solid var(--color-gray-shade-medium);
-    padding: var(--spacing-4) var(--spacing-4) var(--spacing-4) var(--spacing-6);
+    /* extra left padding leaves room for the magenta selection bar (mockup 2) */
+    padding: var(--spacing-10) var(--spacing-10) var(--spacing-10) var(--spacing-11);
     position: relative;
+    /* cards keep their natural height (settled 2026-07-15): a shorter card leaves
+       empty space below itself in the grid row instead of stretching to match its
+       row neighbors */
   }
 
+  /* all-data grid: smaller cards get tighter, even padding */
+  .content.compact {
+    padding: var(--spacing-6);
+  }
+
+  .content.elevated {
+    box-shadow: var(--box-shadow);
+  }
+
+  /* deeper than the resting .elevated shadow — must stay after it to win the cascade */
   .content.selected {
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   }
 
+  /* magenta left-edge selection bar (mockup 2; ported from MetricCard v1) */
   .content.selected::before {
     content: "";
     position: absolute;
@@ -488,13 +370,16 @@
     background-color: var(--color-magenta-shade-dark);
   }
 
-  .content:has(.no-data) {
-    padding: var(--spacing-8);
-  }
-
   .card-title {
     color: var(--color-black);
-    font-weight: var(--font-weight-bold);
+    font-family: var(--font-family-sans-alt);
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .card-title.underlined {
+    text-decoration: underline;
   }
 
   .card-subtitle {
@@ -502,51 +387,29 @@
     color: var(--color-gray-shade-darker);
   }
 
-  button.content-header {
-    padding: 0;
-    background: none;
-    border: none;
-    font: inherit;
-    cursor: pointer;
-    text-align: left;
-    padding-bottom: var(--spacing-3);
-  }
-
-  /* fix inherited styles from button */
-  :global(button.metric-chart div) {
-    color: var(--color-black);
-    font: inherit;
-    text-align: left;
-  }
-
-  .underlined {
-    text-decoration: underline;
-  }
-
-  .no-data {
+  .disagg-no-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 6rem;
+    padding: var(--spacing-4);
+    background: var(--color-gray-shade-light);
     color: var(--color-gray-shade-darker);
+    font-size: var(--font-size-small);
+    text-align: center;
   }
 
-  .metric-chart {
-    position: relative;
+  .card-footer {
     display: flex;
     flex-direction: column;
-    align-content: start;
-    padding: 0;
-    background: none;
-    border: none;
-    font: inherit;
-    cursor: pointer;
-    margin-top: calc(var(--spacing-3) * -1);
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    margin-top: auto;
   }
 
-  .overlay {
-    position: absolute;
-    left: calc(var(--spacing-4) * -1);
-    width: calc(100% + var(--spacing-8));
-    height: 100%;
-    background: rgba(245, 245, 245, 0.8); /* #f5f5f5 transparent */
-    pointer-events: none; /* allow clicks to pass through overlay */
+  /* source stays left; the download button aligns to the card's right edge below it */
+  .card-footer :global(.button-container) {
+    align-self: flex-end;
   }
 
   .source-container {
@@ -567,23 +430,32 @@
     border: none;
     font: inherit;
     cursor: pointer;
+    height: 20px;
   }
 
+  /* interactive chrome sits above the full-card interaction layer */
   .card-interactive {
     z-index: 300;
+    position: relative;
   }
 
+  .content.selectable {
+    cursor: pointer;
+  }
+
+  /* keyboard/AT affordance only — pointer events go to the container and the chart
+     hover layers beneath (a covering button would swallow chart tooltips) */
   .card-base-interaction-layer {
     width: 100%;
     height: 100%;
     position: absolute;
     background: none;
-    opacity: 0.5;
     top: 0;
     left: 0;
     z-index: 200;
     appearance: none;
     border: none;
+    pointer-events: none;
   }
 
   .card-base-interaction-layer:focus-visible {
@@ -591,12 +463,22 @@
     outline-offset: 0;
   }
 
-  .card-full-width {
-    width: 100%;
+  .download-logo {
+    display: flex;
+    justify-content: end;
+    margin-right: var(--spacing-1);
   }
 
-  /* override tooltip font size */
-  :global(.tooltip-text) {
-    font-size: 12px !important;
+  .download-source {
+    color: var(--color-gray-shade-darker);
+    font-size: var(--font-size-small);
+  }
+
+  .card-tooltip {
+    position: absolute;
+  }
+
+  .card-tooltip :global(.tooltip-outer) {
+    pointer-events: all !important;
   }
 </style>

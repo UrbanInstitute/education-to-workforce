@@ -1,15 +1,17 @@
+// A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review.
+
 import { base } from "$app/paths";
 
-/** Constants for constructing absolute URLs in different project environemnts. */
-export const STAGING_BASE_URL = "https://apps-staging.urban.org";
-export const PRODUCTION_BASE_URL = "https://apps.urban.org";
+/** Constants for constructing absolute URLs in different project environments. */
+const STAGING_BASE_URL = "https://apps-staging.urban.org";
+const PRODUCTION_BASE_URL = "https://apps.urban.org";
 
 /**
  * @description: Takes a relative project URL and returns one with the base path prepended.
  * @param {string} url - The relative project URL.
  * @return {string} The relative URL with the base path prepended.
  */
-export function getProjectUrl(url) {
+function getProjectUrl(url) {
   return `${base}/${url}`;
 }
 

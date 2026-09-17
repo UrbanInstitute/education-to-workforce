@@ -1,0 +1,245 @@
+#### Consolidated content for the v2 single-page tool (dev-plan §3.6). ####
+#### Copy landed 2026-08-20 from e2w_refresh_text_DHreview.md. ####
+
+#### TITLE / HERO ####
+
+title: The Education-to-Workforce Framework Data Tool
+
+description: Explore data on education and workforce outcomes, and compare data by geography, income, race, ethnicity, and more.
+
+data_download_link: https://datacatalog.urban.org/dataset/education-workforce-framework-tool-data
+
+data_download_text: Download Data
+
+[copy]
+* The path from school to the workforce has no set route, which can make measuring short-term milestones and long-term outcomes difficult. To ensure students are headed in the right direction and have access to environments that set them up for success, local leaders need data that span across sectors and systems.
+* The <a href="https://educationtoworkforce.org/" target="_blank">Education-to-Workforce Indicator Framework</a> makes it easy <a href="https://thetraininghub.strivetogether.org/learn/courses/541/introduction-to-the-e-w-framework-self-paced" target="_blank">to understand students’ performance and progress</a> across geographies and over time. Here, we collect all available national data to allow policymakers, educators, community organizations, parents, and students to measure achievement and take action in their communities.
+[]
+
+#### NAV LABELS ####
+
+{nav}
+allData: View all Data
+about: About
+#### tool title beside the Urban logo; links back to the tool root (currently the same ####
+#### string as the hero title above, but editable independently — the navbar hides it ####
+#### below 40rem, where it would crowd the nav links) ####
+toolTitle: The Education-to-Workforce Framework Data Tool
+{}
+
+#### "HOW TO INTERPRET THIS TOOL" MODAL ####
+#### copy is an ordered list of blocks; `type` picks the element (p | list). ####
+
+{modal}
+title: How to interpret this tool
+
+[.copy]
+type: p
+value: This tool displays three components of the <a href="https://educationtoworkforce.org/" target="_blank">Education-to-Workforce Indicator Framework</a>:
+
+type: list
+[.items]
+* <strong>Essential questions</strong> frame how stakeholders can measure performance and progress in their community. The framework includes 20 essential questions, which can be answered by the indicators of success.
+* <strong>Indicators of success</strong> identify metrics that track milestones, outcomes, and local conditions. The framework includes 99 indicators of success, each of which identifies one or more metrics. Together, the indicators provide a holistic picture of education and workforce systems.
+* <strong>Disaggregates</strong> show any disparities in outcomes across student characteristics. The framework identifies 26 disaggregates, 7 of which we display.
+[]
+
+type: p
+value: Select an essential question to explore indicators of success, metrics, and disaggregates. You can also use the map to view different metrics and geographic levels.
+[]
+{}
+
+#### CONTROL-PANEL LABELS ####
+
+{controls}
+dataLevel: Data Level
+location: Geography
+question: Essential question
+metric: Map metric
+noMetrics: No metrics available at this level
+comparison: Select comparison geography
+comparisonLabel: Comparison geography
+removeComparison: Remove comparison
+show: Filter
+hide: Close
+sheetLabel: Controls
+{}
+
+#### GEO-LEVEL DROPDOWN OPTIONS ####
+
+[geoLevelDropdownData]
+value: states
+label: State
+
+value: counties
+label: County
+
+value: school_districts
+label: School district
+
+value: tracts
+label: Neighborhood (census tract)
+[]
+
+#### SHARED AVAILABILITY PHRASE ####
+#### "{n} metrics across {m} indicators of success" — used verbatim by the EQ heading, the
+#### all-data subtitle and the unavailable-data heading, so the three read the same way.
+#### The two nouns pluralize independently: an essential question can have several metrics
+#### under a single indicator, so one shared singular form would render "2 metric across
+#### 1 indicator". `templateNoCount` is for the layout that renders the number separately.
+
+{availability}
+template: {{metricCount}} {{metricNoun}} across {{indicatorCount}} {{indicatorNoun}}
+templateNoCount: {{metricNoun}} across {{indicatorCount}} {{indicatorNoun}}
+metricNoun: metrics
+metricNounSingular: metric
+indicatorNoun: indicators of success
+indicatorNounSingular: indicator of success
+availableSuffix: have available data
+availableSuffixSingular: has available data
+unavailableSuffix: for {{eqName}} do not have available data
+unavailableSuffixSingular: for {{eqName}} does not have available data
+noneAvailable: No metrics have available data
+{}
+
+#### EQ SECTION (jump link + drawers) ####
+
+{eqSection}
+learnMoreLabel: About This Essential Question
+#### the per-EQ intro and use-case sentences live in essential-questions.aml; this middle ####
+#### sentence is shared, and {{count}} is the EQ's indicator_list length ####
+learnMoreCountTemplate: To answer this question, the Education-to-Workforce Framework identifies {{count}} indicators of success:
+populationLabel: Local Population Characteristics
+populationLabelNational: National Population Characteristics
+{}
+
+#### POPULATION CHARACTERISTICS DRAWER ####
+
+{localCharacteristics}
+asOf: As of {{year}}, {{name}} had
+#### the national record names itself "United States"; the sentence needs the article ####
+nationalName: the United States
+{}
+
+#### MAP LEGEND CARD ####
+
+#### the card is hidden entirely when there is no mappable metric, so it needs no empty
+#### state of its own — the control panel's {controls}.noMetrics covers that case
+
+{mapLegend}
+currentlyShowing: Currently showing
+{}
+
+#### SECTION FILTERS (timeframe + disaggregate rows) ####
+
+{filters}
+timeframe: Time frame
+disaggregate: Disaggregates
+sectionLeadTemplate: Filter <strong>{{metricCount}} {{eqName}} metrics</strong> by
+sectionLeadTemplateSingular: Filter <strong>{{metricCount}} {{eqName}} metric</strong> by
+disaggNone: None
+disaggNoData: No data available for this disaggregate.
+{}
+
+#### EQ-SECTION DOWNLOAD ALL (zip) ####
+
+{downloadAll}
+label: Download all chart images
+progress: Downloading {{n}} of {{total}}…
+{}
+
+#### UNAVAILABLE-DATA SECTION ####
+#### noDataBuckets pair with the no-data-categories pipeline (dev-plan §5.1); `codes` is ####
+#### what assigns each ecs code to a bucket. {{state}} is the enclosing state's name. ####
+#### `stateData: true` additionally routes into that bucket every metric the tool DOES ####
+#### publish for the enclosing state, whatever its ecs code — so the bucket means "state- ####
+#### level data exists, here or at ECS" and the other bucket means "nowhere". ####
+#### labelSubstate/copySubstate replace label/copy in a county/district/tract view, where ####
+#### that merged meaning needs different wording than at states level; {{geography}} is ####
+#### the selected geography ("Anderson County, Texas"). ####
+
+{unavailableData}
+copy: Not all indicators of success and their related metrics have available data. In some cases, data are not collected at all, are not collected widely, or are not publicly available. Below, we detail which indicators are missing data for this essential question.
+{}
+
+[noDataBuckets]
+value: state_reported
+label: Publicly available in {{state}}
+copy: These metrics are not collected at the federal level but can be accessed through this state’s publicly available data, as reported by the Education Commission of the States’ <a href="https://www.ecs.org/state-data-reporting-dashboard/" target="_blank">State Data Reporting Dashboard</a>.
+copySubstate: These metrics do not include data for {{geography}}, but data is collected at the state level. Try changing your data level or access the data through this state’s publicly available data, as reported by the Education Commission of the States’ <a href="https://www.ecs.org/state-data-reporting-dashboard/" target="_blank">State Data Reporting Dashboard</a>.
+codes: found
+stateData: true
+
+value: not_found
+label: No data available
+copy: These metrics are not available in public data at the federal level or in {{state}}. The <a href="https://studentupwardmobility.urban.org/" target="_blank">Student Upward Mobility Initiative</a> is working to fill these gaps, and we invite schools, institutions, and community-based organizations to partner with us. Email us at <a href="mailto:SUMI@urban.org">SUMI@urban.org</a>.
+copySubstate: These metrics are not available in {{geography}}, either because they are not collected in public data at the federal level or because the data is suppressed due to sample size concerns. The <a href="https://studentupwardmobility.urban.org/" target="_blank">Student Upward Mobility Initiative</a> is working to fill some of these gaps, and we invite schools, institutions, and community-based organizations to partner with us. Email us at <a href="mailto:SUMI@urban.org">SUMI@urban.org</a>.
+codes: not_found
+[]
+
+#### ALL-DATA SECTION ####
+
+{allData}
+title: Explore All Education-to-Workforce Indicators of Success
+#### the subtitle is built from {availability} so it matches the EQ heading word for word ####
+noIndicators: No metrics meet these criteria. Please adjust your selections.
+filterByLabel: Filter by Category
+#### header of the accordion drawer these controls collapse into below 48rem ####
+filterDrawerLabel: Adjust timeframe, disaggregate and sector, type or domain
+returnToTop: Return to top
+
+[.filterBy]
+
+# SECTOR #
+# can be found in the schema excel doc in the fields in the "meta_indicators" tab #
+value: sector
+label: Sector
+[.selections]
+# ----- #
+value: prek
+label: Pre-K
+# ----- #
+value: k12
+label: K–12
+# ----- #
+value: postsec
+label: Postsecondary
+# ----- #
+value: work
+label: Workforce
+[]
+
+# DOMAIN #
+# can be found in the schema excel doc in the "domains" tab #
+value: domain
+label: Domain
+[.selections]
+# ----- #
+value: 1
+label: Academic Progress and Completion
+# ----- #
+value: 2
+label: Career Readiness and Economic Success
+# ----- #
+value: 3
+label: Social, Emotional, and Physical Well-Being
+[]
+
+# TYPE #
+# can be found in the schema excel doc in the "types" tab #
+value: type
+label: Type
+[.selections]
+# ----- #
+value: 3
+label: Adjacent System Conditions
+# ----- #
+value: 2
+label: Education-to-Workforce System Conditions
+# ----- #
+value: 1
+label: Outcomes and Milestones
+[]
+
+[]
+{}

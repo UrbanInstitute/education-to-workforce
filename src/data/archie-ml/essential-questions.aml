@@ -4,100 +4,140 @@ id: 1
 shorthand: Neighborhood conditions
 full_question: Do students and families have access to adequate public supports and neighborhood conditions to enable them to succeed academically and in the workforce?
 question_template: Do students and families {{location}} have access to adequate public supports and neighborhood conditions to enable them to succeed academically and in the workforce?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/do-students-and-families-have-access-adequate-public-supports-and-neighborhood" target="_blank">students and families have access to basic essentials, like food and housing, that are necessary for academic and economic progress</a>.
+learn_more_use: Decisionmakers can use these indicators to assess existing public supports and identify areas for improvement.
 
 id: 2
 shorthand: Full-day prekindergarten
-full_question: Are eligible children enrolled in quality, full-day pre-K programs?
-question_template: Are eligible children {{location}} enrolled in quality, full-day pre-K programs?
+full_question: Are eligible children enrolled in quality, full-day prekindergarten programs?
+question_template: Are eligible children {{location}} enrolled in quality, full-day prekindergarten programs?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-eligible-children-enrolled-quality-full-day-pre-k-programs" target="_blank">children have access to high-quality, affordable, prekindergarten programs</a>.
+learn_more_use: Decisionmakers can use these indicators to understand where families and children need additional support to enroll in their preferred prekindergarten programs.
 
 id: 3
 shorthand: Readiness for early grades
 full_question: Are children demonstrating developmental progress across the five learning domains?
 question_template: Are children {{location}} demonstrating developmental progress across the five learning domains?
+learn_more_intro: This question examines <a href="https://educationtoworkforce.org/essential-questions/are-children-demonstrating-developmental-progress-across-five-learning-domains" target="_blank">whether children are developing across the five domains of early learning</a>: language and literacy, cognition, social-emotional development, approaches to learning, and physical development.
+learn_more_use: Decisionmakers can use these indicators to see whether young children are meeting developmental milestones, track growth across the five learning domains, and provide support where needed.
 
 id: 4
 shorthand: Full-day kindergarten
 full_question: Do students have access to quality, full-day kindergarten?
 question_template: Do students {{location}} have access to quality, full-day kindergarten?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/do-students-have-access-quality-full-day-kindergarten" target="_blank">children have access to full-day kindergarten</a> and whether it is putting them on a path to success.
+learn_more_use: Decisionmakers can use these indicators to assess opportunities to support greater participation in full-day kindergarten.
 
 id: 5
-shorthand: Early grade on track
+shorthand: Early grades on track
 full_question: Are students demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track in the early grades?
 question_template: Are students {{location}} demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track in the early grades?
+learn_more_intro: This question examines whether students are on track for success across the interconnected aspects of <a href="https://educationtoworkforce.org/essential-questions/are-students-demonstrating-satisfactory-academic-progress-consistent-attendance" target="_blank">early grades academic performance, attendance, and positive behavior</a>.
+learn_more_use: Decisionmakers can use these indicators to find students in need of targeted support before third grade, implement developmentally appropriate interventions, and ensure data are available to monitor progress.
 
 id: 6
 shorthand: High-quality school environment
 full_question: Do students have access to quality school environments, including quality curricula and instruction, experienced teachers, effective leaders, and adequate funding?
 question_template: Do students {{location}} have access to quality school environments, including quality curricula and instruction, experienced teachers, effective leaders, and adequate funding?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/do-students-have-access-quality-school-environments-including-quality-curricula" target="_blank">students have the resources and opportunities to succeed</a>, including quality curricula, instruction, teachers, and funding.
+learn_more_use: Decisionmakers can use these indicators to assess resource allocation, understand disparities, and develop high-quality learning environments for all.
 
 id: 7
 shorthand: Exclusionary discipline
 full_question: Are there populations of students that disproportionately experience exclusionary discipline practices that disrupt their educational experience?
 question_template: Are there populations of students {{location}} that disproportionately experience exclusionary discipline practices that disrupt their educational experience?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-there-populations-students-disproportionately-experience-exclusionary" target="_blank">student groups experience different disciplinary outcomes</a>, such as suspensions and expulsions, that are linked to worse academic outcomes.
+learn_more_use: Decisionmakers can use these indicators to understand disciplinary patterns, identify potential biases, and develop restorative approaches to discipline.
 
 id: 8
 shorthand: Early-grade reading and math
 full_question: Are students meeting reading and math benchmarks in grades 3 and 8?
 question_template: Are students {{location}} meeting reading and math benchmarks in grades 3 and 8?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-students-meeting-reading-and-math-benchmarks-grades-3-and-8" target="_blank">students are meeting academic benchmarks that are predictive of future educational success</a>.
+learn_more_use: Decisionmakers can use these indicators to assess whether elementary and middle school students are on track for later success and implement targeted support strategies for students in need of extra help.
 
 id: 9
 shorthand: Teacher and school contributions
 full_question: Are teachers and schools making sufficient contributions to academic growth for students?
 question_template: Are teachers and schools {{location}} making sufficient contributions to academic growth for students?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-teachers-and-schools-making-sufficient-contributions-academic-growth" target="_blank">students have effective teachers and learn in school environments that enable student success</a>.
+learn_more_use: Decisionmakers can use these indicators to assess teacher and school effectiveness, understand educational opportunities, and identify where investments are needed.
 
 id: 10
 shorthand: Supportive school environments
 full_question: Do students attend schools with safe, inclusive, and supportive environments that support their social, emotional, mental, and physical development and well-being?
 question_template: Do students {{location}} attend schools with safe, inclusive, and supportive environments that support their social, emotional, mental, and physical development and well-being?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/do-students-attend-schools-safe-inclusive-and-supportive-environments-support" target="_blank">schools offer supportive environments that promote student belonging, health, and well-being</a>.
+learn_more_use: Decisionmakers can use these indicators to assess school environments and implement new approaches to support student well-being.
 
 id: 11
 shorthand: High school on track
 full_question: Are students demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track for high school graduation?
 question_template: Are students {{location}} demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track for high school graduation?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-students-demonstrating-satisfactory-academic-progress-consistent-0" target="_blank">students are meeting the various interconnected benchmarks of high school success</a>, including academic performance, attendance, and discipline.
+learn_more_use: Decisionmakers can use these indicators to identify middle and early high school students who are falling off track for graduation and target additional supports to support their success.
 
 id: 12
 shorthand: College preparation
 full_question: Do students have access to and complete rigorous and accelerated college preparatory coursework?
 question_template: Do students {{location}} have access to and complete rigorous and accelerated college preparatory coursework?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/do-students-have-access-and-complete-rigorous-and-accelerated-college" target="_blank">students have access to the challenging academic coursework that will prepare them for admission to and success in postsecondary education</a>.
+learn_more_use: Decisionmakers can use these indicators to understand how advanced course offerings vary by location and identify barriers to course access and completion.
 
 id: 13
 shorthand: Applying to college
 full_question: Are students taking the necessary steps to apply to college after high school with sufficient counseling support?
 question_template: Are students {{location}} taking the necessary steps to apply to college after high school with sufficient counseling support?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-students-taking-necessary-steps-apply-college-after-high-school-sufficient" target="_blank">students are completing the steps necessary to apply to college</a>, including taking standardized tests and completing financial aid applications.
+learn_more_use: Decisionmakers can use these indicators to identify unmet needs for application guidance and develop strategies to support students through the college application process.
 
 id: 14
 shorthand: High school graduation
 full_question: Are students graduating from high school on time and successfully transitioning into further education, training, or employment?
 question_template: Are students {{location}} graduating from high school on time and successfully transitioning into further education, training, or employment?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-students-graduating-high-school-time-and-successfully-transitioning-further" target="_blank">graduating high school students can successfully transition into their next steps of further education, job training, or employment</a>.
+learn_more_use: Decisionmakers can use these indicators to understand which college and career paths for which students are well prepared after high school and where additional supports might be needed.
 
 id: 15
 shorthand: Career pathways
 full_question: Are there quality pathways for students who pursue career training that lead to employment in quality jobs?
 question_template: Are there quality pathways for students who pursue career training {{location}} that lead to employment in quality jobs?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-there-quality-pathways-students-who-pursue-career-training-lead-employment" target="_blank">students have access to quality, effective career training pathways that align with high-demand fields</a>.
+learn_more_use: Decisionmakers can use these indicators to understand students’ preparedness for high-quality jobs, identify potential industry partnerships, and develop strategies to support sustainable employment outcomes.
 
 id: 16
 shorthand: College enrollment
 full_question: Are students matriculating to well-matched postsecondary institutions that successfully graduate their students with credentials of value?
 question_template: Are students {{location}} matriculating to well-matched postsecondary institutions that successfully graduate their students with credentials of value?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-students-matriculating-well-matched-postsecondary-institutions-successfully" target="_blank">students enroll in colleges that are likely to allow the student to earn enough to cover the costs of their education</a>.
+learn_more_use: Decisionmakers can use these indicators to assess what types of postsecondary institutions students are attending and identify opportunities to help students select colleges that are likely to deliver a credential of value.
 
 id: 17
 shorthand: Financial aid
 full_question: Do students attend postsecondary institutions that provide adequate financial aid and are adequately funded to offer a quality educational experience?
 question_template: Do students {{location}} attend postsecondary institutions that provide adequate financial aid and are adequately funded to offer a quality educational experience?
+learn_more_intro: This question examines the <a href="https://educationtoworkforce.org/essential-questions/do-students-attend-postsecondary-institutions-provide-adequate-financial-aid" target="_blank">financial accessibility of postsecondary institutions and whether these institutions can meet students’ financial needs</a>.
+learn_more_use: Decisionmakers can use these indicators to understand students’ access to affordable, high-quality colleges that provide valuable credentials.
 
 id: 18
 shorthand: College on track
 full_question: Are students experiencing sufficient early momentum in postsecondary education to be on track for on-time completion?
 question_template: Are students {{location}} experiencing sufficient early momentum in postsecondary education to be on track for on-time completion?
+learn_more_intro: This question examines whether <a href="https://educationtoworkforce.org/essential-questions/are-students-experiencing-sufficient-early-momentum-postsecondary-education-be" target="_blank">postsecondary students are on track to complete their degree on time after their first year</a>.
+learn_more_use: Decisionmakers can use these indicators to assess whether current supports are sufficient to keep postsecondary students on track and to target additional support as needed.
 
 id: 19
 shorthand: Postsecondary skills and outcomes
 full_question: Are students completing credentials of value after high school that set them up for success in the workforce?
 question_template: Are students {{location}} completing credentials of value after high school that set them up for success in the workforce?
+learn_more_intro: This question examines whether students <a href="https://educationtoworkforce.org/essential-questions/are-students-completing-credentials-value-after-high-school-set-them-success" target="_blank">earn credentials that have value in the labor market and lead to sufficient economic return</a>.
+learn_more_use: Decisionmakers can use these indicators to understand whether students are earning credentials that will translate to meaningful economic success.
 
 id: 20
 shorthand: Economic mobility and security
 full_question: Are students gaining access to quality jobs that offer economic mobility and security after high school or postsecondary training and education?
 question_template: Are students {{location}} gaining access to quality jobs that offer economic mobility and security after high school or postsecondary training and education?
+learn_more_intro: This question examines whether students have <a href="https://educationtoworkforce.org/essential-questions/are-students-gaining-access-quality-jobs-offer-economic-mobility-and-security" target="_blank">access to stable jobs with potential for career growth</a>.
+learn_more_use: Decisionmakers can use these indicators to assess employment and other economic success outcomes.
 
 []

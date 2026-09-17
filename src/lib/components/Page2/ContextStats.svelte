@@ -90,7 +90,7 @@
 <div class="contextual-data">
   <div class="contextual-data-primary">
     {#if name}
-      <span class="contextual-data-title">As of 2022, {name} had </span>
+      <span class="contextual-data-title">As of 2023, {name} had </span>
     {/if}
     {#each primaryContextVars as item, i}
       {@render contextVar(item)}{i < primaryContextVars.length - 1 ? " " : ""}
