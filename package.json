@@ -1,10 +1,14 @@
 {
-  "name": "dataviz-project-starter-kit",
+  "name": "education-to-workforce",
   "private": true,
   "version": "0.7.0",
   "type": "module",
   "scripts": {
     "data:preprocess": "cd data/R && Rscript run-all-preprocessing-scripts.R",
+    "data:metadata": "Rscript data/R/preprocess-metadata.R",
+    "data:no-data": "Rscript data/R/preprocess-no-data.R",
+    "data:reconcile": "Rscript data/R/reconcile-map-availability.R",
+    "data:audit": "Rscript data/R/audit-data-availability.R",
     "data:postprocess": "node data/postprocess-metric-data.js",
     "data:mapbox": "make -f data/Makefile",
     "data:all": "npm run data:preprocess && npm run data:postprocess && npm run data:mapbox",
@@ -16,8 +20,8 @@
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:watch": "vitest",
-    "lint": "prettier --plugin-search-dir . --check .",
-    "format": "prettier --plugin-search-dir . --write ."
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@rollup/plugin-dsv": "^3.0.5",
@@ -26,12 +30,12 @@
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@vitest/ui": "^1.5.0",
-    "node-fetch": "^3.3.2",
+    "jsdom": "^29.1.1",
     "prettier": "^3.2.5",
-    "prettier-plugin-svelte": "^3.2.3",
+    "prettier-plugin-svelte": "^4.1.1",
     "rollup-plugin-archieml": "^1.2.1",
-    "svelte": "^5.16.0",
-    "svelte-check": "^3.6.9",
+    "svelte": "^5.56.4",
+    "svelte-check": "^4.7.2",
     "svelte-intersection-observer": "^1.0.0",
     "sveltekit-search-params": "^3.0.0",
     "typescript": "^5.4.5",
@@ -41,22 +45,19 @@
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@nozbe/microfuzz": "^1.0.0",
+    "@turf/bbox": "^7.3.5",
     "@turf/bbox-polygon": "^7.2.0",
     "@turf/boolean-point-in-polygon": "^7.2.0",
     "@turf/helpers": "^7.2.0",
-    "@turf/turf": "^7.2.0",
-    "@turf/union": "^7.2.0",
     "@urbaninstitute/dataviz-components": "^0.12.4",
     "d3-array": "^3.2.4",
     "d3-delaunay": "^6.0.4",
     "d3-format": "^3.1.0",
     "d3-scale": "^4.0.2",
-    "d3-shape": "^3.2.0",
+    "fflate": "^0.8.3",
     "html2canvas": "^1.4.1",
     "layercake": "^8.4.2",
-    "lodash": "^4.17.21",
     "mapbox-gl": "^3.8.0",
-    "runed": "^0.23.4",
     "topojson-client": "^3.1.0"
   }
 }

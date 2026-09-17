@@ -1,3 +1,5 @@
+// A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review.
+
 import cacheMap from "./cacheMap";
 
 export default class GeoNames {
@@ -5,18 +7,23 @@ export default class GeoNames {
 
   /**
    * @param {"states" | "counties" | "tracts" | "school_districts"} geoLevel
+   * @param {{ fetchData: typeof cacheMap.fetchData }} [cache] - injectable for tests
    */
-  constructor(geoLevel) {
+  constructor(geoLevel, cache = cacheMap) {
     this.geoLevel = geoLevel;
     this.ready = false;
+    this.cache = cache;
   }
 
   async fetchData() {
-    const lookupData = await cacheMap.fetchData("metadata", this.geoLevel);
-    if (lookupData && lookupData.length > 0) {
-      for (let item of lookupData) {
-        this.geoLookup.set(item.geoid, item.name);
-      }
+    const lookupData = await this.cache.fetchData("metadata", this.geoLevel);
+    // an empty lookup would leave getName() throwing on every map hover, far from the
+    // cause — fail here instead, where the caller can render it
+    if (!lookupData || lookupData.length === 0) {
+      throw new Error(`No geography metadata for ${this.geoLevel}.`);
+    }
+    for (let item of lookupData) {
+      this.geoLookup.set(item.geoid, item.name);
     }
     this.ready = true;
   }
@@ -40,8 +47,9 @@ export default class GeoNames {
     }
   }
   /**
+   * Synchronous lookup against the already-loaded metadata; throws if the id is absent.
    * @param {number} id
-   * @returns {Promise<{geoid: string, name: string}>}
+   * @returns {{geoid: string, name: string}}
    */
   getName(id) {
     const strId = this.formatId(id);

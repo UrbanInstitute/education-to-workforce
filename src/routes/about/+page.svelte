@@ -1,3 +1,5 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
 <script>
   import {
     Meta,
@@ -57,7 +59,8 @@
     padding-left: 1em;
   }
 
-  @media (min-width: 769px) {
+  /* above the canonical mobile breakpoint (app.css); was a lone 769px */
+  @media (min-width: 48rem) {
     div :global(ul) {
       font-size: var(--font-size-xl);
     }

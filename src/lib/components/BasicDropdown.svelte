@@ -1,67 +1,52 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
 <script>
   import IconChevronFull from "$icons/IconChevronFull.svelte";
   import IconChevronOutline from "$icons/IconChevronOutline.svelte";
   import { urbanColors } from "@urbaninstitute/dataviz-components/utils";
 
   /**
-   * Variant of dropdown
-   * @type {string} ["primary" | "secondary-blue" | "secondary-black" | "secondary-yellow"]
+   * @typedef {Object} Props
+   * @property {string} [variant="primary"] - variant of dropdown: "primary" | "secondary-blue" | "secondary-black" | "secondary-yellow"
+   * @property {string} id - unique id given to the dropdown DOM node
+   * @property {string | number | null} [value] - bindable current value (data.value)
+   * @property {{ value: string | number, label: string }[]} data - source data (value and label attributes)
+   * @property {string} inlineLabel - label for the dropdown (used for accessibility even if showLabel is false)
+   * @property {boolean} [showLabel=false] - show label above dropdown
+   * @property {string | null} [placeholder="Select..."] - placeholder when no option is selected (null to omit)
+   * @property {boolean} [border=true] - show border around dropdown
+   * @property {number} [dropdownWidth=260] - width (px) of the dropdown, capped at the
+   *   container's own width so a narrow parent shrinks it instead of being overflowed
+   * @property {(event: Event) => void} [onchange] - change callback (replaces the Svelte 4 on:change forwarding)
+   * @property {import("svelte").Snippet} [icon] - custom chevron icon (defaults to the per-variant chevron)
    */
-  export let variant = "primary";
 
-  /**
-   * Unique id given to the dropdown DOM node
-   * @type {string}
-   */
-  export let id;
-
-  /**
-   * Binds to the current value for the dropdown (data.value)
-   * @type {string | null}
-   */
-  export let value;
-
-  /**
-   * Source data as an array of objects (value and label attributes)
-   * @type {{ value: string, label: string}[]}
-   */
-  export let data;
-
-  /**
-   * Label for the dropdown (used for accessibility even if showLabel is set to false)
-   * @type {string}
-   */
-  export let inlineLabel;
-
-  /**
-   * Show label above dropdown
-   * @type {boolean}
-   */
-  export let showLabel = false;
-
-  /**
-   * placeholder for when no option is selected (accepts a null value)
-   * @type {string | null} [placeholder="Select..."]
-   */
-  export let placeholder = "Select...";
-
-  /**
-   * Width (px) of the dropdown
-   * @type {number}
-   */
-  export let dropdownWidth = 260;
+  /** @type {Props} */
+  let {
+    variant = "primary",
+    id,
+    value = $bindable(),
+    data,
+    inlineLabel,
+    showLabel = false,
+    placeholder = "Select...",
+    dropdownWidth = 260,
+    border = true,
+    onchange = undefined,
+    icon = undefined
+  } = $props();
 </script>
 
 <div class="dropdown-parent">
   <label aria-hidden="true" hidden={!showLabel} for={id}>{inlineLabel} </label>
-  <div class="dropdown-container" style:width={`${dropdownWidth}px `}>
+  <div class="dropdown-container" class:border style:width={`${dropdownWidth}px`}>
     <select
       bind:value
       name={id}
       {id}
       class={`dropdown-select ${variant}`}
       aria-label={inlineLabel}
-      on:change
+      {onchange}
     >
       <!-- options -->
       {#if placeholder}
@@ -75,15 +60,15 @@
     </select>
     <div class="icons" aria-hidden="true">
       <span class="dropdown-chevron">
-        <slot name="icon">
-          {#if variant === "primary"}
-            <IconChevronFull fill={urbanColors.blue_shade_dark} />
-          {:else if variant === "secondary-blue" || variant === "secondary-black"}
-            <IconChevronOutline />
-          {:else if variant === "secondary-yellow"}
-            <IconChevronOutline fill={urbanColors.black} />
-          {/if}
-        </slot>
+        {#if icon}
+          {@render icon()}
+        {:else if variant === "primary"}
+          <IconChevronFull fill={urbanColors.blue_shade_dark} />
+        {:else if variant === "secondary-blue" || variant === "secondary-black"}
+          <IconChevronOutline />
+        {:else if variant === "secondary-yellow"}
+          <IconChevronOutline fill={urbanColors.black} />
+        {/if}
       </span>
     </div>
   </div>
@@ -98,6 +83,16 @@
 
   .dropdown-container {
     position: relative;
+    /* dropdownWidth is applied inline above, which as a hard width overflowed any parent
+       narrower than it with no way for the parent to claw it back — the map legend card on
+       a phone was the live case, a 340px dropdown in a ~300px card pushing 32px of
+       horizontal page scroll at 360px wide. This clamps that case and nothing else: a
+       parent at least dropdownWidth wide is untouched.
+       max-width rather than folding the cap into the inline `width: min(100%, Npx)` — a
+       percentage width resolves to auto for intrinsic sizing, so that shrank shrink-to-fit
+       parents (the section-filter groups) to the select's own text and then resolved 100%
+       against that, taking the timeframe dropdowns from 213px to 172px everywhere. */
+    max-width: 100%;
   }
 
   label {
@@ -123,10 +118,18 @@
   }
 
   .dropdown-select.primary {
-    color: var(--color-gray-shade-darker);
-    padding: var(--spacing-2) var(--spacing-8) var(--spacing-2) var(--spacing-3);
-    border: 1px solid var(--color-gray);
+    color: var(--color-black);
+    font-weight: var(--font-weight-bold);
     background-color: var(--color-white);
+    border: none;
+    padding-right: var(--spacing-8);
+  }
+
+  .border .dropdown-select.primary {
+    color: var(--color-gray-shade-darker);
+    font-weight: var(--font-weight-normal);
+    border: 1px solid var(--color-gray);
+    padding: var(--spacing-2) var(--spacing-8) var(--spacing-2) var(--spacing-3);
   }
 
   .dropdown-select[class*="secondary-"] {

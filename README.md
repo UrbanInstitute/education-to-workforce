@@ -31,3 +31,7 @@ npm run dev
 
 Open your browser and visit [http://localhost:5173](http://localhost:5173) to see your project running.
 
+## Generative AI notice
+
+A generative AI model wrote or edited portions of this codebase with the supervision of a human developer and careful human review.
+

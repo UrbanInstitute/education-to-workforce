@@ -1,24 +1,62 @@
-{.barchart}
+#### Chart alt-text templates, keyed by role combination (v2 scheme; see getChartData.js ####
+#### getChartAltText / getAltTemplateKey). Keys: national | primary | primary_state | ####
+#### primary_comparison | primary_state_comparison. Bar variables: {{year}} {{metric}} ####
+#### {{primary_name}} {{primary_value}} {{state_name}} {{state_value}} {{comparison_name}} ####
+#### {{comparison_value}} {{national_value}}. Trend variables: same names with _first/_last ####
+#### value suffixes plus {{year_first}}/{{year_last}}. ####
 
-state: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{national_value}} nationally.
+{barsAlt}
 
-state_compare: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{comparison_value}} in {{comparison_location}} and {{national_value}} nationally.
+national: Bar chart of {{metric}} nationally: {{national_value}} in {{year}}.
 
-county_tract: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{state_value}} in {{state}} and {{national_value}} nationally.
+primary: Bar chart of {{metric}} in {{primary_name}}: {{primary_value}} in {{year}}, compared to {{national_value}} nationally.
 
-county_tract_compare: In {{year}}, the {{metric}} in {{location}} was {{value}} compared with {{comparison_value}} in {{comparison_location}}, {{state_value}} in {{state}}, and {{national_value}} nationally
+primary_state: Bar chart of {{metric}} in {{primary_name}}: {{primary_value}} in {{year}}, compared to {{state_value}} in {{state_name}} and {{national_value}} nationally.
 
-{}
+primary_comparison: Bar chart of {{metric}} in {{primary_name}} ({{primary_value}}) and {{comparison_name}} ({{comparison_value}}) in {{year}}, compared to {{national_value}} nationally.
 
-{.linechart}
-
-state: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}} and {{national_value_last}} nationally.
-
-state_compare: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} compared with {{comparison_value_first}} in {{comparison_location}} and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}}, {{comparison_value_last}} in {{comparison_location}}, and {{national_value_last}} nationally.
-
-county_tract: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} compared with {{state_value_first}} in {{state}} and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}}, {{state_value_last}} in {{state}}, and {{national_value_last}} nationally.
-
-county_tract_compare: In {{year_first}}, the {{metric}} in {{location}} was {{value_first}} compared with {{comparison_value_first}} in {{comparison_location}}, {{state_value_first}} in {{state}}, and {{national_value_first}} nationally. By {{year_last}}, it was {{value_last}} in {{location}}, {{comparison_value_last}} in {{comparison_location}}, {{state_value_last}} in {{state}}, and {{national_value_last}} nationally.
+primary_state_comparison: Bar chart of {{metric}} in {{primary_name}} ({{primary_value}}) and {{comparison_name}} ({{comparison_value}}) in {{year}}, compared to {{state_value}} in {{state_name}} and {{national_value}} nationally.
 
 {}
 
+{trendAlt}
+
+national: Line chart of {{metric}} nationally, from {{national_value_first}} in {{year_first}} to {{national_value_last}} in {{year_last}}.
+
+primary: Line chart of {{metric}} in {{primary_name}}, from {{primary_value_first}} in {{year_first}} to {{primary_value_last}} in {{year_last}}.
+
+primary_state: Line chart of {{metric}} in {{primary_name}}, from {{primary_value_first}} to {{primary_value_last}} between {{year_first}} and {{year_last}}, with {{state_name}} and national reference lines.
+
+primary_comparison: Line chart of {{metric}} in {{primary_name}} ({{primary_value_first}} to {{primary_value_last}}) and {{comparison_name}} ({{comparison_value_first}} to {{comparison_value_last}}) between {{year_first}} and {{year_last}}.
+
+primary_state_comparison: Line chart of {{metric}} in {{primary_name}} ({{primary_value_first}} to {{primary_value_last}}) and {{comparison_name}} ({{comparison_value_first}} to {{comparison_value_last}}) between {{year_first}} and {{year_last}}, with state and national reference lines.
+
+{}
+
+{disaggBarsAlt}
+
+national: Disaggregated bar chart of {{metric}} nationally in {{year}}.
+
+primary: Disaggregated bar chart of {{metric}} in {{primary_name}} in {{year}}.
+
+primary_state: Disaggregated bar chart of {{metric}} in {{primary_name}} in {{year}}, with state and national references.
+
+primary_comparison: Disaggregated bar chart of {{metric}} in {{primary_name}} and {{comparison_name}} in {{year}}.
+
+primary_state_comparison: Disaggregated bar chart of {{metric}} in {{primary_name}} and {{comparison_name}} in {{year}}, with state and national references.
+
+{}
+
+{disaggTrendsAlt}
+
+national: Disaggregated line charts of {{metric}} nationally, {{year_first}} to {{year_last}}.
+
+primary: Disaggregated line charts of {{metric}} in {{primary_name}}, {{year_first}} to {{year_last}}.
+
+primary_state: Disaggregated line charts of {{metric}} in {{primary_name}}, {{year_first}} to {{year_last}}, with state and national reference lines.
+
+primary_comparison: Disaggregated line charts of {{metric}} in {{primary_name}} and {{comparison_name}}, {{year_first}} to {{year_last}}.
+
+primary_state_comparison: Disaggregated line charts of {{metric}} in {{primary_name}} and {{comparison_name}}, {{year_first}} to {{year_last}}, with state and national reference lines.
+
+{}

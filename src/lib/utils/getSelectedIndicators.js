@@ -1,72 +1,82 @@
+// A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review.
+
+// aliased: `hasMetricData` is also the name of the per-indicator accumulator below
+import { hasMetricData as geoHasMetricData } from "$utils/disaggregates";
+
 /**
- * @param {import("./types/EssentialQuestionObject.js").EssentialQuestionObject | undefined} selectedEq - selected essential question id
- * @param {import("../../routes/indicators/[slug]/$types").PageData | import("../../routes/map/[slug]/$types").PageData | import("../../routes/$types").PageData} pageData - page data (from indicators or map)
+ * Annotate indicators with the metrics that do and don't have data for a geography.
+ *
+ * Pure: returns new indicator objects rather than writing onto the shared
+ * `metadata.indicators` entries. ToolState derives two lists (EQ-scoped and all-data) from
+ * the same metadata, so in-place annotation had them overwriting each other's fields.
+ * Consumers must key `{#each}` blocks by `indicator_number`, not object identity.
+ *
+ * @param {import("$utils/types/EssentialQuestionObject.js").EssentialQuestionObject | undefined} selectedEq - selected essential question id
+ * @param {import("../../routes/$types").PageData} pageData - page data
  * @param {import("$utils/types/GeoidDataObject.js").GeoidDataObject | undefined} geoid1Data - The data for the first geography
- * @returns {import("./types/IndicatorObject.js").IndicatorObject[]} - The selected indicators
+ * @returns {import("$utils/types/IndicatorObject.js").IndicatorObject[]} - The selected indicators
  */
 const getSelectedIndicators = (selectedEq, pageData, geoid1Data) => {
-  // get indicators based on selected eq
-  /** @type {import("./types/IndicatorObject.js").IndicatorObject[] | any} */
+  /** @type {import("$utils/types/IndicatorObject.js").IndicatorObject[] | any} */
   let indicatorsInit;
   if (selectedEq) {
-    // if there's an eq selected, get the indicators based on the selected eq
-    indicatorsInit = selectedEq.indicator_list.map((/** @type {string} */ d) =>
-      pageData.metadata.indicators.find((ind) => ind.indicator_number === +d)
-    );
+    // an EQ may reference an indicator that isn't in the metadata — drop it rather than throw
+    indicatorsInit = selectedEq.indicator_list
+      .map((/** @type {string} */ d) =>
+        pageData.metadata.indicators.find((ind) => ind.indicator_number === +d)
+      )
+      .filter(Boolean);
   } else {
-    // if there's no eq selected, get all indicators
     indicatorsInit = pageData.metadata.indicators;
   }
 
-  // filter metrics based on in_tool === true
-  // for each indicator
   return indicatorsInit.map(
-    (/** @type {import("../utils/types/IndicatorObject.js").IndicatorObject} */ ind) => {
-      // initialize list
-      ind.metricMetadataList = [];
-      // if single string, convert string to a single array
-      if (typeof ind?.metrics === "string") ind.metrics = [ind.metrics];
-      // for each metric in the indicator
-      ind?.metrics.forEach((/** @type {string | number} */ metricId) => {
-        // get the actual metadata based on the metric ID
-        let metricMetadata = pageData.metadata.metrics.find(
-          // filter metrics to indicator and in_tool is true
+    (/** @type {import("$utils/types/IndicatorObject.js").IndicatorObject} */ ind) => {
+      // metrics is a single string for single-metric indicators
+      const metricIds = typeof ind?.metrics === "string" ? [ind.metrics] : (ind?.metrics ?? []);
+      /** @type {import("$utils/types/MetricMetadataObject.js").MetricMetadataObject[]} */
+      const metricMetadataList = [];
+      metricIds.forEach((/** @type {string | number} */ metricId) => {
+        const metricMetadata = pageData.metadata.metrics.find(
           (metric) => +metricId === metric.metric_id
         );
-        // if metricMetadata exists, push to indicator's metricMetadataList
         // @ts-ignore
-        if (metricMetadata) ind.metricMetadataList.push(metricMetadata);
+        if (metricMetadata) metricMetadataList.push(metricMetadata);
       });
 
-      ind.hasMetricData = [];
-      ind.noMetricData = [];
-      // check if there are metrics to iterate through and geoid1Data exists
-      if (ind.metricMetadataList.length > 0 && geoid1Data) {
-        ind.metricMetadataList.forEach(
+      /** @type {import("$utils/types/MetricMetadataObject.js").MetricMetadataObject[]} */
+      const hasMetricData = [];
+      /** @type {import("$utils/types/MetricMetadataObject.js").MetricMetadataObject[]} */
+      const noMetricData = [];
+      // without geography data, data presence is unknown rather than absent — leave both
+      // lists empty so the grids keep their skeleton state instead of rendering a
+      // "no data" bucket holding every metric
+      if (geoid1Data) {
+        metricMetadataList.forEach(
           (
-            /** @type {import("../utils/types/MetricMetadataObject.js").MetricMetadataObject} */ metric
+            /** @type {import("$utils/types/MetricMetadataObject.js").MetricMetadataObject} */ metric
           ) => {
-            // if geoid data exists, metric data exists for the geoid, geo level is true, and in_tool is true
-            if (
-              geoid1Data &&
-              geoid1Data?.data?.hasOwnProperty("m" + metric.metric_id) &&
+            // data exists for the geoid, the metric is published at this level, and it's in the tool.
+            // hasMetricData probes subgroup keys for disaggregate-only metrics (m190), which have
+            // no base m{id} accessor and would otherwise never leave the no-data bucket (§11.4).
+            const hasData =
+              geoHasMetricData(geoid1Data.data, metric) &&
               // @ts-ignore
               metric["geo_" + pageData.slug] === true &&
-              metric.in_tool === true
-            ) {
-              // @ts-ignore
-              ind.hasMetricData.push(metric);
-            } else {
-              // @ts-ignore
-              ind.noMetricData.push(metric);
-            }
+              metric.in_tool === true;
+            (hasData ? hasMetricData : noMetricData).push(metric);
           }
         );
-        ind.hasMetricDataCount = ind.hasMetricData.length > 0;
-        ind.noMetricDataCount = ind.noMetricData.length > 0;
       }
 
-      return ind;
+      return {
+        ...ind,
+        metricMetadataList,
+        hasMetricData,
+        noMetricData,
+        hasMetricDataCount: hasMetricData.length > 0,
+        noMetricDataCount: noMetricData.length > 0
+      };
     }
   );
 };

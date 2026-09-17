@@ -1,8 +1,34 @@
+<!-- A generative AI model wrote or edited portions of this file with the supervision of a human developer and careful human review. -->
+
+<script module>
+  import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+
+  // The lib has no "added to the DOM" hook, and we need one: the input and the suggestion
+  // list only exist once addTo() has run. Patch the prototype once per module — this used
+  // to run in component scope, so every mount wrapped the previous wrapper and the Nth
+  // geocoder on the page emitted the event N times. The marker makes the patch idempotent
+  // even when a dev-time HMR reload re-executes this module against the same prototype.
+  if (!(/** @type {*} */ (MapboxGeocoder.prototype.addTo).emitsAddedToDOM)) {
+    const originalAddTo = MapboxGeocoder.prototype.addTo;
+    /**
+     * @this {*}
+     * @param {string | HTMLElement} container
+     */
+    const addTo = function (container) {
+      const result = originalAddTo.call(this, container);
+      this._eventEmitter.emit("addedToDOM");
+      return result;
+    };
+    /** @type {*} */ (addTo).emitsAddedToDOM = true;
+    MapboxGeocoder.prototype.addTo = addTo;
+  }
+</script>
+
 <script>
   import "./mapbox-gl-geocoder.css";
   import "./local-geocoder-styles.css";
-  import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
   import localGeocoder from "$components/Geocoder/localGeocoder";
+  import { attachGeocoderA11y } from "./geocoderA11y";
   import { getTractFromResult } from "$utils/tractLookup";
   import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
 
@@ -11,7 +37,7 @@
    * @typedef {Object} Props
    * @property {string} types mapbox: a comma seperated list of types that filter results to match those specified
    * @property {string} placeholder mapbox: Override the default placeholder attribute value. (optional, default Search)
-   * @property {Object} customData custom data to be used for geocoder
+   * @property {{ features: any[], [key: string]: any }} customData custom data to be used for geocoder (GeoJSON FeatureCollection shape)
    * @property {string} [input] string to set the input to
    * @property {string} [id] id for the input element
    * @property {Function} [onresult] function to run on result selection
@@ -38,17 +64,9 @@
     eyebrowLabel = null
   } = $props();
 
-  import.meta.env.MODE === "development" && console.log(`render Geocoder with id: ${id}`);
-
-  // add "addedToDOM" event to disable after load
-  const originalAddTo = MapboxGeocoder.prototype.addTo;
-  MapboxGeocoder.prototype.addTo = function (container) {
-    const result = originalAddTo.call(this, container);
-    this._eventEmitter.emit("addedToDOM");
-    return result;
-  };
-
-  // initialize geocoder
+  // initialize geocoder; the constructor options intentionally capture the props'
+  // initial values — the instance is built once and never reconfigured
+  // svelte-ignore state_referenced_locally
   const geocoder = new MapboxGeocoder({
     accessToken: PUBLIC_MAPBOX_API_KEY,
     types: types, // location types - region = state, district = county, address = address to be looked up to tract
@@ -72,20 +90,44 @@
   });
 
   /** @type {HTMLDivElement} */ let geocoderRef;
+  /** @type {(() => void) | undefined} */ let detachA11y;
 
-  // when geocoder is added to DOM, set disabled state
+  // polite live region text; the a11y decoration drives it off what the list actually drew
+  let announcement = $state("");
+
+  // when geocoder is added to DOM, wire up ids, disabled state and ARIA
   geocoder.on("addedToDOM", () => {
-    const el = geocoder.container.querySelector(".mapboxgl-ctrl-geocoder--input");
+    const container = /** @type {*} */ (geocoder).container;
+    /** @type {HTMLInputElement} */
+    const el = container.querySelector(".mapboxgl-ctrl-geocoder--input");
+
+    // the lib builds the input, so its id — which the visible `<label for>` in the control
+    // panel points at for the accessible name — has to be assigned here
+    el.id = id;
+
     el.disabled = disabled;
-    el.ariaDisabled = true;
+    // reflect the actual state — this used to be hardcoded true, announcing every
+    // enabled geocoder as disabled to assistive tech
+    el.ariaDisabled = disabled ? "true" : "false";
 
     el.autocomplete = "off";
 
+    // combobox semantics + polite result announcements; the suggestion list is drawn into
+    // a `<ul>` the typeahead inserts next to the input
+    const list = container.querySelector("ul.suggestions");
+    if (list) {
+      detachA11y = attachGeocoderA11y(el, list, {
+        id,
+        onAnnounce: (message) => (announcement = message)
+      });
+    }
+
     // handle width
+    const inputWrapper = /** @type {HTMLElement} */ (el.parentNode);
     el.style.minWidth = `${width}px`;
     el.style.width = `${width}px`;
-    el.parentNode.style.minWidth = `${width}px`;
-    el.parentNode.style.width = `${width}px`;
+    inputWrapper.style.minWidth = `${width}px`;
+    inputWrapper.style.width = `${width}px`;
   });
 
   // set input on result
@@ -106,7 +148,7 @@
 
       if (tractInfo) {
         // set input to the tract name
-        geocoder.setInput(tractInfo.properties.title)
+        geocoder.setInput(tractInfo.properties.title);
       }
 
       // call onresult handler with tract data
@@ -124,19 +166,13 @@
 
   $effect(() => {
     // equivalent to onMount
-    // add the geocoder to the DOM
+    // add the geocoder to the DOM (the addedToDOM handler above decorates it)
     geocoder.addTo(geocoderRef);
-
-    // set input id so the eyebrow text in GeocoderWrapper
-    // component can be associated with the input
-    const inputElement = geocoderRef?.querySelector("input");
-    if (inputElement) {
-      inputElement.id = id;
-    }
 
     // equivalent to onDestroy
     return () => {
-      // remove the geocoder from the DOM
+      // stop observing the suggestion list, then remove the geocoder from the DOM
+      detachA11y?.();
       geocoderRef.remove();
     };
   });
@@ -152,6 +188,8 @@
     <label for={id}>{eyebrowLabel}</label>
   {/if}
   <div bind:this={geocoderRef}></div>
+  <!-- announces how many suggestions were drawn, or the lib's no-results / error message -->
+  <div class="visually-hidden" role="status" aria-live="polite">{announcement}</div>
 </div>
 
 <style>
